@@ -10,3 +10,4 @@ eyeicon.onclick = function () {
     eyeicon.setAttribute("name", "eye-off-outline");
   }
 };
+
