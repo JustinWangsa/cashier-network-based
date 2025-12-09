@@ -1,136 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="../../output.css" rel="stylesheet" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="../../output.css" rel="stylesheet">
-</head>
+  <body
+    class="bg-[#E0FAEF] m-0 p-0 overflow-hidden gap-6 flex flex-col h-screen"
+  >
+    <!-- NAVBAR -->
+    <nav
+      class="flex items-center justify-between bg-[#137048] shadow-[1px_3px_20px_#181515] px-4 md:px-12 py-3"
+    >
+      <div
+        class="flex items-center gap-4 md:gap-7 text-[22px] md:text-[30px] font-bold text-white drop-shadow-[2px_2px_8px_#181515]"
+      >
+        <img
+          src="/src/Cashier/assets/Logo.svg"
+          class="w-[35px] md:w-10"
+          alt=""
+        />
+        <p>ASEP'S POS</p>
+      </div>
 
-<body class="bg-[#E0FAEF] m-0 p-0 overflow-hidden">
-  <!-- NAVBAR -->
-  <nav class="flex items-center justify-between bg-[#137048] shadow-[1px_3px_20px_#181515] px-4 md:px-12 py-3">
+      <form action="/logout" method="POST">
+        <button
+          class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
+        >
+          Logout
+        </button>
+      </form>
+    </nav>
+
     <div
-      class="flex items-center gap-4 md:gap-7 text-[22px] md:text-[30px] font-bold text-white drop-shadow-[2px_2px_8px_#181515]">
-      <img src="/src/Cashier/assets/Logo.svg" class="w-[35px] md:w-10" alt="" />
-      <p>ASEP'S POS</p>
-    </div>
-
-    <form action="/logout" method="POST">
-      <button
-        class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200">
-        Logout
-      </button>
-    </form>
-  </nav>
-
-  <div class="min-h-screen w-[95vw] mx-auto">
-
-    <div class="mt-6 space-y-6 ">
-
-      <!-- ROW 1 -->
-      <div class="flex flex-row  gap-8 h-[70vh] max-2xl:h-[65vh]">
+      class="flex flex-row gap-3 md:gap-5 lg:gap-8 px-3 md:px-6 lg:px-12 pb-3 md:pb-6 lg:pb-12 flex-1 overflow-hidden"
+    >
+      <!-- COL 1 -->
+      <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 flex-1 min-w-0">
         <!-- ITEMS BOX -->
-        <div class="flex flex-col flex-1 bg-white p-[22px] rounded-xl shadow-[0_4px_15px_#00000071] overflow-y-auto">
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-5 top-0 bg-white z-10 pb-2.5">
-            <button class="text-[#26A65B] text-[18px] md:text-[20px] font-bold cursor-pointer">
+
+        <div
+          class="w-88 sm:w-auto flex flex-col gap-4 md:gap-8 lg:gap-12 flex-5 bg-white p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 rounded-xl shadow-xl/20 overflow-y-auto"
+        >
+          <div class="flex flex-col sm:flex-row justify-between gap-3">
+            <button
+              class="text-[#26A65B] text-sm md:text-base lg:text-[20px] font-bold cursor-pointer whitespace-nowrap"
+            >
               + ADD NEW ITEM
             </button>
 
-            <input type="text" placeholder="Search items here"
-              class="w-full sm:w-[260px] px-3.5 py-2.5 rounded-[40px] border border-[#ccc]" />
+            <input
+              type="text"
+              placeholder="Search items here"
+              class="w-full sm:w-48 md:w-56 lg:w-[260px] px-2.5 md:px-3 lg:px-3.5 py-1.5 md:py-2 lg:py-2.5 rounded-[40px] border border-[#ccc] text-sm md:text-base"
+            />
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 overflow-y-auto">
-            <div class="text-center">
-              <div class="w-full h-[100px] overflow-hidden rounded-md">
-                <img src="/src/Cashier/assets/Beverage.svg" class="w-full h-full object-cover" />
-              </div>
-              <p class="font-bold mt-1.5">Bertrand Onlyfans</p>
-              <p class="text-[#27ae60] font-bold">NT$1000</p>
-            </div>
-            <div class="text-center">
-              <div class="w-full h-[100px] overflow-hidden rounded-md">
-                <img src="/src/Cashier/assets/Beverage.svg" class="w-full h-full object-cover" />
-              </div>
-              <p class="font-bold mt-1.5">Bertrand Onlyfans</p>
-              <p class="text-[#27ae60] font-bold">NT$1000</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- CHECKOUT BOX -->
-        <div class="w-full lg:w-140 bg-white p-[22px] rounded-xl shadow-[0_4px_15px_#00000071]">
-          <h2 class="text-[20px] font-bold text-center">Checkout</h2>
-        </div>
-      </div>
-
-      <!-- ROW 2 -->
-      <div class="flex flex-row gap-8 test-class max-2xl:h-[25vh]">
-        <!-- CATEGORY BUTTONS -->
-        <div class="flex flex-wrap gap-6 test-class flex-1 justify-between">
-
-          <a class="flex-1 min-w-24 sm:min-w-28 md:min-w-32 lg:min-w-36">
-            <div 
-            class="bg-white p-4 md:p-[22px] shadow-[0_4px_15px_#00000071] h-32 md:h-36 w-full flex flex-col items-center justify-center rounded-[5px] outline-2 outline-[#C0C0C0]">
-              <img src="/src/Cashier/assets/All.svg" class="w-[35px] md:w-10 h-[35px] md:h-10 mb-2" />
-              <h2 class="text-[16px] md:text-[17px] font-bold text-[#C0C0C0]">
-                All
-              </h2>
-            </div>
-          </a>
-
-          <a class="flex-1 min-w-24 sm:min-w-28 md:min-w-32 lg:min-w-36">
-            <div
-              class="bg-white p-4 md:p-[22px] shadow-[0_4px_15px_#00000071] h-32 md:h-36 w-full flex flex-col items-center justify-center rounded-[5px] outline-2 outline-[#C0C0C0]">
-              <img src="/src/Cashier/assets/Food.svg" class="w-[35px] md:w-10 h-[35px] md:h-10 mb-2" />
-              <h2 class="text-[16px] md:text-[17px] font-bold text-[#C0C0C0]">
-                Food
-              </h2>
-            </div>
-          </a>
-
-          <a class="flex-1 min-w-24 sm:min-w-28 md:min-w-32 lg:min-w-36">
-            <div
-              class="bg-white p-4 md:p-[22px] shadow-[0_4px_15px_#00000071] h-32 md:h-36 w-full flex flex-col items-center justify-center rounded-[5px] outline-2 outline-[#C0C0C0]">
-              <img src="/src/Cashier/assets/Beverage.svg" class="w-[35px] md:w-10 h-[35px] md:h-10 mb-2" />
-              <h2 class="text-[16px] md:text-[17px] font-bold text-[#C0C0C0]">
-                Beverage
-              </h2>
-            </div>
-          </a>
-
-          <a class="flex-1 min-w-24 sm:min-w-28 md:min-w-32 lg:min-w-36">
-            <div
-              class="bg-white p-4 md:p-[22px] shadow-[0_4px_15px_#00000071] h-32 md:h-36 w-full flex flex-col items-center justify-center rounded-[5px] outline-2 outline-[#C0C0C0]">
-              <img src="/src/Cashier/assets/Snacks.svg" class="w-[35px] md:w-10 h-[35px] md:h-10 mb-2" />
-              <h2 class="text-[16px] md:text-[17px] font-bold text-[#C0C0C0]">
-                Snacks
-              </h2>
-            </div>
-          </a>
-
-          <a class="flex-1 min-w-24 sm:min-w-28 md:min-w-32 lg:min-w-36">
-            <div
-              class="bg-white p-4 md:p-[22px] shadow-[0_4px_15px_#00000071] h-32 md:h-36 w-full flex flex-col items-center justify-center rounded-[5px] outline-2 outline-[#C0C0C0]">
-              <img src="/src/Cashier/assets/Others.svg" class="w-[35px] md:w-10 h-[35px] md:h-10 mb-2" />
-              <p class="text-[16px] md:text-[17px] font-bold text-[#C0C0C0]">
-                Others
+          <div
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
+          >
+            <div class="rounded-md text-center">
+              <img
+                src="/src/assets/windows-11-stock-black-abstract-black-background-amoled-3840x2400-8971.jpg"
+                class="object-cover aspect-square rounded-md"
+              />
+              <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">
+                Bertrand Onlyfans
+              </p>
+              <p
+                class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base"
+              >
+                NT$1000
               </p>
             </div>
-          </a>
+          </div>
         </div>
-        <!-- PAY HERE BUTTON -->
+
+        <!-- CATEGORY BUTTONS -->
         <div
-          class="w-full lg:w-140 bg-[#27DD8E] p-[22px] rounded-xl shadow-[0_4px_15px_#00000071] h-32 md:h-36 flex items-center justify-center">
-          <h2 class="text-[20px] font-bold text-center">PAY HERE</h2>
+          class="flex flex-row justify-start xl:justify-between items-stretch gap-3 sm:gap-4 md:gap-6 overflow-x-auto flex-nowrap pb-1 h-24 xl:h-32"
+        >
+          <a class="shrink-0">
+            <div
+              class="bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center rounded-xs"
+            >
+              <img
+                src="/src/assets/All.svg"
+                class="aspect-square sm:w-6 lg:w-8 xl:min-w-15 mb-2"
+              />
+              <h2 class="font-bold text-[#C0C0C0]">All</h2>
+            </div> </a
+          ><a class="shrink-0">
+            <div
+              class="bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center rounded-xs"
+            >
+              <img
+                src="/src/assets/All.svg"
+                class="aspect-square sm:w-6 lg:w-8 xl:min-w-15 mb-2"
+              />
+              <h2 class="font-bold text-[#C0C0C0]">All</h2>
+            </div> </a
+          ><a class="shrink-0">
+            <div
+              class="bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center rounded-xs"
+            >
+              <img
+                src="/src/assets/All.svg"
+                class="aspect-square sm:w-6 lg:w-8 xl:min-w-15 mb-2"
+              />
+              <h2 class="font-bold text-[#C0C0C0]">All</h2>
+            </div> </a
+          ><a class="shrink-0">
+            <div
+              class="bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center rounded-xs"
+            >
+              <img
+                src="/src/assets/All.svg"
+                class="aspect-square sm:w-6 lg:w-8 xl:min-w-15 mb-2"
+              />
+              <h2 class="font-bold text-[#C0C0C0]">All</h2>
+            </div> </a
+          ><a class="shrink-0">
+            <div
+              class="bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center rounded-xs"
+            >
+              <img
+                src="/src/assets/All.svg"
+                class="aspect-square sm:w-6 lg:w-8 xl:min-w-15 mb-2"
+              />
+              <h2 class="font-bold text-[#C0C0C0]">All</h2>
+            </div>
+          </a>
         </div>
       </div>
 
+      <!-- COL 2 -->
+      <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 min-w-0">
+        <!-- CHECKOUT BOX -->
+        <div
+          class="w-48 sm:w-64 xl:w-lg flex flex-col gap-4 md:gap-8 lg:gap-12 flex-5 bg-white p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 rounded-xl shadow-xl/20 overflow-y-auto"
+        >
+          <h2
+            class="font-bold text-center text-sm md:text-base lg:text-lg mb-3 md:mb-4"
+          >
+            Checkout
+          </h2>
+        </div>
+
+        <!-- PAY HERE BUTTON -->
+        <div
+          class="bg-[#27DD8E] rounded-xl shadow-xl/20 flex items-center justify-center h-24 xl:h-32"
+        >
+          <h2 class="font-bold text-center text-base md:text-lg lg:text-xl">
+            PAY HERE
+          </h2>
+        </div>
+      </div>
     </div>
-
-   
-</body>
-
+  </body>
 </html>
-

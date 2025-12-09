@@ -3,3 +3,17 @@
 .test-class {
   background-color: red;
 }
+
+/* @media only screen and (min-width: 1024px) {
+  .catalog-img {
+    height: 8rem !important;
+    width: 100% !important;
+  }
+}
+
+@media only screen and (min-width: 1440px) {
+  .catalog-img {
+    height: 10rem !important;
+    width: 100% !important;
+  }
+} */
