@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.test-class {
+  background-color: red;
+}
