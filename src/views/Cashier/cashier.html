@@ -37,13 +37,17 @@
       class="flex flex-row gap-3 md:gap-5 lg:gap-8 px-3 md:px-6 lg:px-12 pb-3 md:pb-6 lg:pb-12 flex-1 overflow-hidden"
     >
       <!-- COL 1 -->
-      <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 flex-1 min-w-0">
+      <div 
+        class="flex flex-col gap-3 md:gap-5 lg:gap-8 flex-1 min-w-0 "
+      >
         <!-- ITEMS BOX -->
-
         <div
-          class="w-88 sm:w-auto flex flex-col gap-4 md:gap-8 lg:gap-12 flex-5 bg-white p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 rounded-xl shadow-xl/20 overflow-y-auto"
+          class="flex-5 flex-col bg-white p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 rounded-xl shadow-xl/20 overflow-y-auto"
         >
-          <div class="flex flex-col sm:flex-row justify-end gap-3 ml-[100px]">
+        
+          <div 
+            class="flex flex-col sm:flex-row justify-end gap-3 ml-[100px]"
+          >
             <input
               type="text"
               placeholder="Search items here"
@@ -73,11 +77,11 @@
 
         <!-- CATEGORY BUTTONS -->
         <div
-          class="flex flex-row justify-start xl:justify-between items-stretch gap-3 sm:gap-4 md:gap-6 overflow-x-auto flex-nowrap pb-1 h-24 xl:h-32"
+          class="flex flex-row justify-start xl:justify-between items-stretch gap-3 sm:gap-4 md:gap-6 flex-nowrap h-26 xl:h-21"
         >
           <a class="shrink-0">
             <div
-              class="bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center rounded-xs border-[#C0C0C0] border rounded-[40px]"
+              class="bg-white p-4 px-18 flex flex-col justify-center items-center rounded-[6px] border-[#C0C0C0] border-2 w-64"
             >
               <img
                 src="/src/assets/All.svg"
@@ -88,7 +92,7 @@
           </a>
           <a class="shrink-0">
             <div
-              class="bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center rounded-xs border-[#C0C0C0] border"
+              class="bg-white p-4 px-18 flex flex-col justify-center items-center rounded-[6px] border-[#C0C0C0] border-2 w-64"
             >
               <img
                 src="/src/assets/Food.svg"
@@ -99,7 +103,7 @@
           </a>
           <a class="shrink-0">
             <div
-              class="bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center rounded-xs border-[#C0C0C0] border"
+              class="bg-white p-4 px-18 flex flex-col justify-center items-center rounded-[6px] border-[#C0C0C0] border-2 w-64"
             >
               <img
                 src="/src/assets/Beverage.svg"
@@ -110,7 +114,7 @@
           </a>
           <a class="shrink-0">
             <div
-              class="bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center rounded-xs border-[#C0C0C0] border"
+              class="bg-white p-4 px-18 flex flex-col justify-center items-center rounded-[6px] border-[#C0C0C0] border-2"
             >
               <img
                 src="/src/assets/Snacks.svg"
@@ -121,7 +125,7 @@
           </a>
           <a class="shrink-0">
             <div
-              class="bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center rounded-xs border-[#C0C0C0] border"
+              class="bg-white p-4 px-18 flex flex-col justify-center items-center rounded-[6px] border-[#C0C0C0] border-2"
             >
               <img
                 src="/src/assets/Others.svg"
@@ -139,13 +143,13 @@
       >
         <!-- CHECKOUT BOX -->
         <div 
-          class="w-48 sm:w-64 xl:w-lg flex flex-col gap-4 md:gap-8 lg:gap-12 flex-5 bg-white rounded-xl shadow-xl/20 overflow-y-auto border-2 border-[#d4cccc]"
+          class="w-48 sm:w-64 xl:w-lg flex-1 flex-col gap-4 md:gap-8 lg:gap-12 flex-5 bg-white rounded-[6px] shadow-xl/20 overflow-y-auto border-2 border-[#d4cccc]"
         >
           <div 
             class="flex flex-col gap-4 p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6"
           >
             <h2 
-              class="font-bold text-center text-[35px] md:text-[22px] lg:text-[35px] mb-3 md:mb-4 text-[#105E3C]"
+              class="font-bold text-center text-[35px] md:text-[22px] lg:text-[35px] text-[#105E3C]"
             >
                 Checkout
             </h2>
@@ -153,20 +157,18 @@
 
           <!-- header checkout -->
           <div
-            class="flex justify-between font-semibold py-2 text-sm font-bold text-[#717171] w-full bg-[#D4D4D4] border-t-2 border-b-2"
+            class="flex justify-between font-semibold py-2 text-sm font-bold text-[#717171] w-full bg-[#F1F1F1] border-t-1 border-b-1 border-[#C0C0C0]"
           >
             <p class="flex-1 text-left px-8">Name</p>
             <p class="flex-1 text-center">QTY</p>
             <p class="text-right px-8">Price</p>
           </div>
-
-
-      </div>
+        </div>
 
 
         <!-- PAY HERE BUTTON -->
         <div
-          class="bg-[#27DD8E] rounded-xl shadow-xl/20 flex items-center justify-center h-24 xl:h-32"
+          class="bg-[#27DD8E] rounded-xl shadow-xl/20 flex items-center justify-center h-24 xl:h-32 border-3 border-[#27DD8E] cursor-pointer hover:bg-[#1FA76D] transition-all duration-200"
         >
           <h2 class="font-bold text-center text-base md:text-lg lg:text-xl">
             PAY HERE
