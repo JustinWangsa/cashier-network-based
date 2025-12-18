@@ -45,7 +45,7 @@ function renderCart() {
     total += item.price * item.qty
 
     cartItems.innerHTML += `
-      <div class="flex items-center justify-between px-4 py-3 font-bold text-[#4B4B4B]">
+      <div class="flex items-center justify-between px-4 py-3 font-bold text-[#4B4B4B] text-[4px]">
 
         <div class="flex items-center gap-3 flex-1">
           <img

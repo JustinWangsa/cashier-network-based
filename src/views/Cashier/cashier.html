@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="../../output.css" rel="stylesheet" />
     <script src="./script.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Aclonica&display=swap" rel="stylesheet">
   </head>
 
   <body
@@ -22,7 +25,7 @@
           class="w-[35px] md:w-10"
           alt=""
         />
-        <p>ASEP'S POS</p>
+        <p class="font-['Aclonica']">ASEP'S POS</p>
       </div>
 
       <form action="/logout" method="POST">
@@ -35,22 +38,29 @@
     </nav>
 
     <div
-      class="flex flex-row gap-3 md:gap-5 lg:gap-8 px-3 md:px-6 lg:px-12 pb-3 md:pb-6 lg:pb-12 flex-1 overflow-hidden"
+      class="flex flex-row gap-3 md:gap-5 px-3 md:px-6 lg:px-12 pb-3 md:pb-6 lg:pb-12 flex-1 overflow-hidden"
     >
       <!-- COL 1 -->
       <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 flex-1 min-w-0">
         <!-- ITEMS BOX -->
-
         <div
-          class="w-88 sm:w-auto flex flex-col gap-4 md:gap-8 lg:gap-12 flex-5 bg-white p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 rounded-xl shadow-xl/20 overflow-y-auto"
+          class="w-88 sm:w-auto flex flex-col gap-4 md:gap-8 flex-5 bg-white p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 rounded-xl shadow-xl/20 overflow-y-auto"
         >
           <div class="flex flex-col sm:flex-row justify-end gap-3 ml-[100px]">
-            <input
-              id="searchInput"
-              type="text"
-              placeholder="Search items here"
-              class="w-full sm:w-48 md:w-56 lg:w-[260px] px-2.5 md:px-3 lg:px-3.5 py-1.5 md:py-2 lg:py-2.5 rounded-[40px] border border-[#ccc] text-sm md:text-base"
-            />
+            <div class="relative w-full sm:w-48 md:w-56 lg:w-[260px]">
+              <img
+                src="/src/assets/Searchlogo.svg"
+                alt="Search"
+                class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-60 pointer-events-none"
+              />
+
+              <input
+                id="searchInput"
+                type="text"
+                placeholder="Search items here"
+                class="w-full pl-9 px-3 py-2 rounded-[40px] border-1 border-[#999] text-sm md:text-base focus:outline-none"
+              />
+            </div>
           </div>
 
           <div
@@ -107,7 +117,7 @@
             <div
               data-icon="All"
               onclick="selectCategory(this)"
-              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px]"
+              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px] w-60"
             >
               <img
                 src="/src/assets/All.svg"
@@ -120,7 +130,7 @@
             <div
               data-icon="Food"
               onclick="selectCategory(this)"
-              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px]"
+              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px] w-60"
             >
               <img
                 src="/src/assets/Food.svg"
@@ -134,7 +144,7 @@
             <div
               data-icon="Beverage"
               onclick="selectCategory(this)"
-              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px]"
+              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px] w-60"
             >
               <img
                 src="/src/assets/Beverage.svg"
@@ -147,7 +157,7 @@
             <div 
               data-icon="Snacks"
               onclick="selectCategory(this)"
-              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px]"
+              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px] w-60"
             >
               <img
                 src="/src/assets/Snacks.svg"
@@ -160,7 +170,7 @@
             <div
               data-icon="Others"
               onclick="selectCategory(this)"
-              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px]"
+              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px] w-60"
             >
               <img
                 src="/src/assets/Others.svg"
@@ -202,7 +212,6 @@
           <!-- cart items -->
           <div id="cartItems" class="flex flex-col divide-y"></div>
 
-
           <div
             class="mt-auto flex justify-between items-center px-6 py-4 font-bold text-[15px] bg-[#F1F1F1] border-t border-[#d4cccc]"
           >
@@ -216,7 +225,8 @@
         <div
           class="bg-[#27DD8E] rounded-xl shadow-xl/20 flex items-center justify-center h-24 xl:h-32"
         >
-          <h2 class="font-bold text-center text-base md:text-lg lg:text-xl">
+          <h2 
+            class="font-bold text-center text-base md:text-lg lg:text-xl">
             PAY HERE
           </h2>
         </div>
