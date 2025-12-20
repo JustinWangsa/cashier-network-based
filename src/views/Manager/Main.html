@@ -76,7 +76,7 @@
         <!-- CHECKOUT BOX -->
 
         <div
-          class="w-48 sm:w-64 xl:w-lg flex flex-col flex-5 bg-white rounded-xl shadow-xl/20 overflow-y-auto border-2 border-[#d4cccc]"
+          class="w-48 sm:w-64 xl:w-lg flex flex-col bg-white rounded-xl shadow-xl/20 overflow-y-auto border-2 border-[#d4cccc] pb-8"
         >
           <div
             class="flex flex-col gap-4 p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 border-b-3 border-[#ccc]"
@@ -137,10 +137,10 @@
                 <input
                   id="stockInput"
                   type="number"
-                  value="01"
+                  value="1"
                   required
                   placeholder="."
-                  class="w-16 text-center border rounded bg-gray-100"
+                  class="w-16 h-8 rounded bg-gray-100 text-center px-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
                 <button
                   id="plusStock"
@@ -163,34 +163,35 @@
                 type="file"
                 accept="image/*"
                 class="hidden"
+                placeholder="."
               />
-
-              <!-- Fake input (styled like your other inputs) -->
-              <button
-                type="button"
-                onclick="imageUpload.click()"
-                class="w-full p-3 border border-gray-300 rounded-md bg-gray-100 text-left text-gray-500 hover:bg-gray-200 transition"
-                id="fakeUpload"
-              >
-                Upload Image
-              </button>
-              <div class="flex items-center gap-3 mt-2">
+              <div class="flex items-center gap-3">
                 <button
-                  id="removeImage"
-                  class="hidden px-2 py-1 bg-red-500 text-white rounded text-sm"
+                  type="button"
+                  onclick="imageUpload.click()"
+                  class="p-3 border border-gray-300 rounded-md bg-gray-100 text-left text-gray-500 hover:bg-gray-200 transition"
+                  id="fakeUpload"
                 >
-                  ✕
+                  Upload Image
                 </button>
-                <span
-                  id="fileName"
-                  class="text-sm text-green-600 hidden"
-                ></span>
+                <div class="flex items-center gap-3 mt-2">
+                  <span
+                    id="fileName"
+                    class="text-sm text-green-600 hidden"
+                  ></span>
+                  <button
+                    id="removeImage"
+                    class="text-[#7B7B7B] rounded text-sm hidden"
+                  >
+                    X
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- PAY HERE BUTTON -->
+        <!-- SAVE BUTTON -->
         <div
           class="bg-[#27DD8E] rounded-xl shadow-xl/20 flex items-center justify-center h-24 xl:h-32"
           id="saveButton"
