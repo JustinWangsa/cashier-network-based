@@ -393,28 +393,88 @@
       <!-- COL 2 -->
       <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 min-w-0">
         <!-- CHECKOUT BOX -->
+
         <div
-          class="w-48 sm:w-64 xl:w-lg flex flex-col gap-4 md:gap-8 lg:gap-12 flex-5 bg-white rounded-xl shadow-xl/20 overflow-y-auto border-2 border-[#d4cccc]"
+          class="w-48 sm:w-64 xl:w-lg flex flex-col flex-5 bg-white rounded-xl shadow-xl/20 overflow-y-auto border-2 border-[#d4cccc]"
         >
           <div
-            class="flex flex-col gap-4 p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 border-b-2 pb-2 border-[#ccc]"
+            class="flex flex-col gap-4 p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 border-b-3 border-[#ccc]"
           >
             <h2
-              class="font-bold text-center text-[35px] md:text-[22px] lg:text-[35px] mb-3 md:mb-4 text-[#105E3C]"
+              class="font-bold text-center text-[35px] md:text-[22px] lg:text-[25px] text-[#105E3C]"
             >
               Description
             </h2>
           </div>
 
-          <!-- header checkout -->
-          <div
-            class="flex justify-between py-2 text-sm font-bold text-[#717171] w-full bg-[#D4D4D4] border-t-2 border-b-2"
-          >
-            <p class="flex-1 text-left px-8">Name</p>
-            <p class="flex-1 text-center">QTY</p>
-            <p class="text-right px-8">Price</p>
+          <!-- input box -->
+          <div>
+            <div class="pr-4 pl-4 pt-4">
+              <h2
+                class="font-bold text-[35px] md:text-[22px] lg:text-[25px] text-[#36A273]"
+              >
+                Name
+              </h2>
+              <input
+                type="text"
+                id=""
+                placeholder="Item Name"
+                required
+                class="w-full p-3 border border-gray-300 rounded-md focus:outline-none bg-gray-100"
+              />
+            </div>
+
+            <div class="pr-4 pl-4 pt-4">
+              <h2
+                class="font-bold text-[35px] md:text-[22px] lg:text-[25px] text-[#36A273]"
+              >
+                Price
+              </h2>
+              <input
+                type="number"
+                id=""
+                placeholder="Price in NTD"
+                required
+                class="w-full p-3 border border-gray-300 rounded-md focus:outline-none bg-gray-100 outline-none flex-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                onkeydown="return !['e','E','+','-','.'].includes(event.key)"
+              />
+            </div>
+
+            <div class="pr-4 pl-4 pt-4">
+              <h2
+                class="font-bold text-[35px] md:text-[22px] lg:text-[25px] text-[#36A273]"
+              >
+                Stock
+              </h2>
+              <input
+                type="text"
+                id=""
+                placeholder="Item Name"
+                required
+                class="w-full p-3 border border-gray-300 rounded-md focus:outline-none bg-gray-100"
+              />
+            </div>
+
+            <div class="pr-4 pl-4 pt-4">
+              <h2
+                class="font-bold text-[35px] md:text-[22px] lg:text-[25px] text-[#36A273]"
+              >
+                Image
+              </h2>
+              <input
+                type="File"
+                id="ImageUpload"
+                placeholder="Upload Image"
+                required
+                class=" w-24 p-3 border border-gray-300 rounded-md focus:outline-none bg-gray-100"
+              />
+              <span id="fileName" class="text-sm text-green-600 hidden"></span>
+            </div>
           </div>
+
+          <!-- cart items -->
         </div>
+
         <!-- PAY HERE BUTTON -->
         <div
           class="bg-[#27DD8E] rounded-xl shadow-xl/20 flex items-center justify-center h-24 xl:h-32"
@@ -425,5 +485,6 @@
         </div>
       </div>
     </div>
+    <script src="main.js"></script>
   </body>
 </html>
