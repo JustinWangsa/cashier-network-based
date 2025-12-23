@@ -6,6 +6,109 @@
     <link href="../../output.css" rel="stylesheet" />
     <title>Manager Main Page</title>
   </head>
+
+  <!-- ADD ITEM POPUP -->
+  <div
+    id="addItemPopup"
+    class="hidden fixed inset-0 bg-black/40 z-50 items-center justify-center"
+  >
+    <div class="bg-[#E0FAEF] rounded-2xl w-[900px] p-8 relative">
+      <!-- CLOSE BUTTON -->
+      <button
+        id="closePopupBtn"
+        class="absolute top-4 right-4 text-xl font-bold cursor-pointer"
+      >
+        ✕
+      </button>
+
+      <h2 class="text-2xl font-bold text-[#105E3C] mb-6">Add New Item</h2>
+
+      <div class="flex gap-6">
+        <!-- LEFT IMAGE -->
+        <div class="flex flex-col items-center gap-3">
+          <button
+            id="imagePreviewBtn"
+            type="button"
+            onclick="imageUpload.click()"
+            class="w-68 h-68 bg-[#137048] text-white rounded-2xl flex items-center justify-center overflow-hidden cursor-pointer"
+          >
+            <span
+              id="imagePlaceholder"
+              class="flex flex-col items-center gap-2"
+            >
+              <span class="text-3xl">＋</span>
+              Add Image
+            </span>
+          </button>
+
+          <span
+            id="fileName"
+            class="text-sm text-green-600 text-center w-40 wrap-break-words"
+          ></span>
+        </div>
+
+        <!-- RIGHT FORM -->
+        <div class="flex-1 space-y-4">
+          <div class="pr-4 pl-4">
+            <h2
+              class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273]"
+            >
+              Name
+            </h2>
+            <input
+              id="itemName"
+              type="text"
+              placeholder="Item Name"
+              class="w-full p-3 rounded-md bg-white"
+            />
+          </div>
+          <div class="pr-4 pl-4">
+            <h2
+              class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273]"
+            >
+              Price
+            </h2>
+            <input
+              id="itemPrice"
+              type="number"
+              placeholder="Price"
+              class="w-full p-3 rounded-md bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              onkeydown="return !['e','E','+','-','.'].includes(event.key)"
+            />
+          </div>
+          <div class="pr-4 pl-4">
+            <h2
+              class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273]"
+            >
+              Stock
+            </h2>
+            <input
+              id="stockInput"
+              type="number"
+              value="1"
+              class="w-full p-3 rounded-md bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              onkeydown="return !['e','E','+','-','.'].includes(event.key)"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-4 mt-8">
+        <button id="discardBtn" class="px-6 py-2 border rounded-full">
+          Discard
+        </button>
+
+        <!-- Save button uses your existing save logic -->
+        <button
+          id="saveButton"
+          class="px-6 py-2 bg-[#137048] text-white rounded-full"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+
   <body
     class="bg-[#E0FAEF] m-0 p-0 overflow-hidden gap-6 flex flex-col h-screen"
   >
@@ -20,10 +123,36 @@
         <p>ASEP'S POS</p>
       </div>
 
+      <div class="flex flex-1 justify-center gap-20">
+        <div data-icon="stock" onclick="selectCategory(this)">
+          <img
+            src="/src/assets/stock.svg"
+            class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
+            alt=""
+          />
+        </div>
+
+        <div data-icon="history" onclick="selectCategory(this)">
+          <img
+            src="/src/assets/history.svg"
+            class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
+            alt=""
+          />
+        </div>
+
+        <div data-icon="summary" onclick="selectCategory(this)">
+          <img
+            src="/src/assets/summary.svg"
+            class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
+            alt=""
+          />
+        </div>
+      </div>
+
       <form action="/logout" method="POST">
         <button
           class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
-          type="button"
+          type="submit"
         >
           Logout
         </button>
@@ -40,12 +169,30 @@
         <div
           class="w-88 sm:w-auto flex flex-col gap-4 md:gap-8 lg:gap-12 flex-5 bg-white p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 rounded-xl shadow-xl/20 overflow-y-auto"
         >
-          <div class="flex flex-col sm:flex-row justify-end gap-3 ml-[100px]">
-            <input
-              type="text"
-              placeholder="Search items here"
-              class="w-full sm:w-48 md:w-56 lg:w-[260px] px-2.5 md:px-3 lg:px-3.5 py-1.5 md:py-2 lg:py-2.5 rounded-[40px] border border-[#ccc] text-sm md:text-base"
-            />
+          <div class="flex items-center justify-between mb-4">
+            <button
+              class="flex items-center gap-1 text-[#27DD8E] font-bold text-2xl cursor-pointer"
+              type="button"
+              id="addItemBtn"
+            >
+              + ADD NEW ITEM
+            </button>
+            <div class="flex flex-col sm:flex-row justify-end gap-3 ml-[100px]">
+              <div class="relative w-full sm:w-48 md:w-56 lg:w-[260px]">
+                <img
+                  src="/src/assets/Searchlogo.svg"
+                  alt="Search"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-60 pointer-events-none"
+                />
+
+                <input
+                  id="searchInput"
+                  type="text"
+                  placeholder="Search items here"
+                  class="w-full pl-9 px-3 py-2 rounded-[40px] border-1 border-[#999] text-sm md:text-base focus:outline-none"
+                />
+              </div>
+            </div>
           </div>
 
           <div
@@ -61,6 +208,20 @@
               <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">
                 Bertrand Onlyfans
               </p>
+              <p
+                class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base"
+              >
+                NT$1000
+              </p>
+            </div>
+
+            <div class="rounded-md text-center">
+              <img
+                src="/src/assets/windows-11-stock-black-abstract-black-background-amoled-3840x2400-8971.jpg"
+                class="object-cover aspect-square rounded-md"
+                alt=""
+              />
+              <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">test</p>
               <p
                 class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base"
               >
