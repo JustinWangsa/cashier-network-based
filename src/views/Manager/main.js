@@ -106,32 +106,22 @@ searchInput.addEventListener('input', () => {
 
 //category selection function/
 function selectCategory(activeBtn) {
-  const buttons = document.querySelectorAll('.category-btn')
+  const buttons = document.querySelectorAll("[data-icon]");
 
-  buttons.forEach(btn => {
-    btn.classList.remove('border-[#27DD8E]')
-    btn.classList.add('border-[#C0C0C0]')
+  buttons.forEach((btn) => {
+    const icon = btn.querySelector("img");
+    const iconName = btn.dataset.icon;
 
-    const text = btn.querySelector('.category-text')
-    text.classList.remove('text-[#105E3C]')
-    text.classList.add('text-[#C0C0C0]')
+    // reset all icons to normal
+    icon.src = `/src/assets/${iconName}.svg`;
+  });
 
-    const iconName = btn.dataset.icon
-    btn.querySelector('.category-icon').src =
-      `/src/assets/${iconName}.svg`
-  })
-
-  activeBtn.classList.remove('border-[#C0C0C0]')
-  activeBtn.classList.add('border-[#27DD8E]')
-
-  const activeText = activeBtn.querySelector('.category-text')
-  activeText.classList.remove('text-[#C0C0C0]')
-  activeText.classList.add('text-[#105E3C]')
-
-  const activeIcon = activeBtn.dataset.icon
-  activeBtn.querySelector('.category-icon').src =
-    `/src/assets/${activeIcon}-active.svg`
+  // set active icon
+  const activeIconName = activeBtn.dataset.icon;
+  const activeImg = activeBtn.querySelector("img");
+  activeImg.src = `/src/assets/${activeIconName}-active.svg`;
 }
+
 
 //always start on stock
 window.addEventListener('load', () => {
