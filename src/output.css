@@ -290,6 +290,9 @@
   .ml-\[100px\] {
     margin-left: 100px;
   }
+  .contents {
+    display: contents;
+  }
   .flex {
     display: flex;
   }
@@ -307,6 +310,9 @@
   }
   .aspect-square {
     aspect-ratio: 1 / 1;
+  }
+  .h-2 {
+    height: calc(var(--spacing) * 2);
   }
   .h-4 {
     height: calc(var(--spacing) * 4);
@@ -359,6 +365,15 @@
   .min-h-screen {
     min-height: 100vh;
   }
+  .w-1 {
+    width: calc(var(--spacing) * 1);
+  }
+  .w-2 {
+    width: calc(var(--spacing) * 2);
+  }
+  .w-3 {
+    width: calc(var(--spacing) * 3);
+  }
   .w-4 {
     width: calc(var(--spacing) * 4);
   }
@@ -380,6 +395,15 @@
   .w-24 {
     width: calc(var(--spacing) * 24);
   }
+  .w-30 {
+    width: calc(var(--spacing) * 30);
+  }
+  .w-36 {
+    width: calc(var(--spacing) * 36);
+  }
+  .w-38 {
+    width: calc(var(--spacing) * 38);
+  }
   .w-40 {
     width: calc(var(--spacing) * 40);
   }
@@ -389,8 +413,14 @@
   .w-60 {
     width: calc(var(--spacing) * 60);
   }
+  .w-64 {
+    width: calc(var(--spacing) * 64);
+  }
   .w-68 {
     width: calc(var(--spacing) * 68);
+  }
+  .w-70 {
+    width: calc(var(--spacing) * 70);
   }
   .w-72 {
     width: calc(var(--spacing) * 72);
@@ -406,6 +436,15 @@
   }
   .w-\[650px\] {
     width: 650px;
+  }
+  .w-\[850px\] {
+    width: 850px;
+  }
+  .w-\[900px\] {
+    width: 900px;
+  }
+  .w-auto {
+    width: auto;
   }
   .w-\[850px\] {
     width: 850px;
@@ -522,6 +561,9 @@
   }
   .gap-6 {
     gap: calc(var(--spacing) * 6);
+  }
+  .gap-9 {
+    gap: calc(var(--spacing) * 9);
   }
   .gap-10 {
     gap: calc(var(--spacing) * 10);
@@ -704,6 +746,12 @@
   .bg-gray-200 {
     background-color: var(--color-gray-200);
   }
+  .bg-gray-300 {
+    background-color: var(--color-gray-300);
+  }
+  .bg-red-500 {
+    background-color: var(--color-red-500);
+  }
   .bg-white {
     background-color: var(--color-white);
   }
@@ -800,6 +848,9 @@
   .pb-8 {
     padding-bottom: calc(var(--spacing) * 8);
   }
+  .pb-10 {
+    padding-bottom: calc(var(--spacing) * 10);
+  }
   .pl-4 {
     padding-left: calc(var(--spacing) * 4);
   }
@@ -814,6 +865,9 @@
   }
   .text-right {
     text-align: right;
+  }
+  .align-middle {
+    vertical-align: middle;
   }
   .font-\[\'Aclonica\'\] {
     font-family: 'Aclonica';
