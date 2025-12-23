@@ -85,12 +85,13 @@ function clearInputs() {
 //search function//
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("searchInput");
-  const items = document.querySelectorAll(".grid > div");
+  const grid = document.getElementById("itemGrid");
 
   searchInput.addEventListener("input", () => {
     const keyword = searchInput.value.toLowerCase();
+    const items = grid.children;
 
-    items.forEach((item) => {
+    Array.from(items).forEach((item) => {
       const name = item.querySelector("p").textContent.toLowerCase();
 
       if (name.includes(keyword)) {
