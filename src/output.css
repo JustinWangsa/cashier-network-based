@@ -263,6 +263,17 @@
   .contents {
     display: contents;
   }
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+=======
+>>>>>>> 45c4540f2c0aef4d14e78187c5dc354a777b04b4
+=======
+  .ml-\[100px\] {
+    margin-left: 100px;
+  }
+>>>>>>> Stashed changes
+=======
+>>>>>>> c0b79a01f2e8086348d65b55b6c3e6bd03c23e35
   .flex {
     display: flex;
   }
@@ -278,9 +289,12 @@
   .aspect-square {
     aspect-ratio: 1 / 1;
   }
+<<<<<<< HEAD
+=======
   .h-2 {
     height: calc(var(--spacing) * 2);
   }
+>>>>>>> c0b79a01f2e8086348d65b55b6c3e6bd03c23e35
   .h-4 {
     height: calc(var(--spacing) * 4);
   }
@@ -293,12 +307,15 @@
   .h-9 {
     height: calc(var(--spacing) * 9);
   }
+<<<<<<< HEAD
+=======
   .h-10 {
     height: calc(var(--spacing) * 10);
   }
   .h-20 {
     height: calc(var(--spacing) * 20);
   }
+>>>>>>> c0b79a01f2e8086348d65b55b6c3e6bd03c23e35
   .h-24 {
     height: calc(var(--spacing) * 24);
   }
@@ -329,6 +346,10 @@
   .min-h-screen {
     min-height: 100vh;
   }
+<<<<<<< HEAD
+  .w-36 {
+    width: calc(var(--spacing) * 36);
+=======
   .w-1 {
     width: calc(var(--spacing) * 1);
   }
@@ -337,6 +358,7 @@
   }
   .w-3 {
     width: calc(var(--spacing) * 3);
+>>>>>>> c0b79a01f2e8086348d65b55b6c3e6bd03c23e35
   }
   .w-4 {
     width: calc(var(--spacing) * 4);
@@ -370,6 +392,8 @@
   }
   .w-24 {
     width: calc(var(--spacing) * 24);
+<<<<<<< HEAD
+=======
   }
   .w-30 {
     width: calc(var(--spacing) * 30);
@@ -379,6 +403,7 @@
   }
   .w-38 {
     width: calc(var(--spacing) * 38);
+>>>>>>> c0b79a01f2e8086348d65b55b6c3e6bd03c23e35
   }
   .w-40 {
     width: calc(var(--spacing) * 40);
@@ -696,6 +721,8 @@
   .bg-\[\#F1F1F1\] {
     background-color: #F1F1F1;
   }
+<<<<<<< HEAD
+=======
   .bg-\[7B7B7B\] {
     background-color: 7B7B7B;
   }
@@ -714,6 +741,7 @@
   .bg-red-500 {
     background-color: var(--color-red-500);
   }
+>>>>>>> c0b79a01f2e8086348d65b55b6c3e6bd03c23e35
   .bg-white {
     background-color: var(--color-white);
   }
@@ -756,9 +784,17 @@
   .px-4 {
     padding-inline: calc(var(--spacing) * 4);
   }
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> c0b79a01f2e8086348d65b55b6c3e6bd03c23e35
   .px-5 {
     padding-inline: calc(var(--spacing) * 5);
   }
+=======
+>>>>>>> Stashed changes
   .px-6 {
     padding-inline: calc(var(--spacing) * 6);
   }
@@ -836,6 +872,10 @@
   }
   .align-middle {
     vertical-align: middle;
+<<<<<<< HEAD
+  .font-\[\'Aclonica\'\] {
+    font-family: 'Aclonica';
+=======
   }
   .font-\[\'Aclonica\'\] {
     font-family: 'Aclonica';
@@ -843,6 +883,7 @@
   .text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
+>>>>>>> c0b79a01f2e8086348d65b55b6c3e6bd03c23e35
   }
   .text-4xl {
     font-size: var(--text-4xl);
@@ -881,6 +922,18 @@
   }
   .text-\[35px\] {
     font-size: 35px;
+<<<<<<< HEAD
+  }
+  .text-\[40px\] {
+    font-size: 40px;
+  }
+  .text-\[4000px\] {
+    font-size: 4000px;
+  }
+  .text-\[400000px\] {
+    font-size: 400000px;
+=======
+>>>>>>> c0b79a01f2e8086348d65b55b6c3e6bd03c23e35
   }
   .leading-5 {
     --tw-leading: calc(var(--spacing) * 5);
@@ -1536,3 +1589,4 @@
     }
   }
 }
+  }}}
