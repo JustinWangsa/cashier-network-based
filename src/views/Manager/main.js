@@ -78,3 +78,68 @@ saveBtn.addEventListener("click", () => {
 
   stockInput.value = Number(stockInput.value) - 1;
 });
+
+//search function//
+document.addEventListener('DOMContentLoaded', () => {
+const searchInput = document.getElementById('searchInput')
+const items = document.querySelectorAll(
+  '.grid > div'
+)
+
+searchInput.addEventListener('input', () => {
+  const keyword = searchInput.value.toLowerCase()
+
+  items.forEach(item => {
+    const name = item
+      .querySelector('p')
+      .textContent
+      .toLowerCase()
+
+    if (name.includes(keyword)) {
+      item.style.display = ''
+    } else {
+      item.style.display = 'none'
+    }
+  })
+})
+})
+
+//category selection function/
+function selectCategory(activeBtn) {
+  const buttons = document.querySelectorAll('.category-btn')
+
+  buttons.forEach(btn => {
+    btn.classList.remove('border-[#27DD8E]')
+    btn.classList.add('border-[#C0C0C0]')
+
+    const text = btn.querySelector('.category-text')
+    text.classList.remove('text-[#105E3C]')
+    text.classList.add('text-[#C0C0C0]')
+
+    const iconName = btn.dataset.icon
+    btn.querySelector('.category-icon').src =
+      `/src/assets/${iconName}.svg`
+  })
+
+  activeBtn.classList.remove('border-[#C0C0C0]')
+  activeBtn.classList.add('border-[#27DD8E]')
+
+  const activeText = activeBtn.querySelector('.category-text')
+  activeText.classList.remove('text-[#C0C0C0]')
+  activeText.classList.add('text-[#105E3C]')
+
+  const activeIcon = activeBtn.dataset.icon
+  activeBtn.querySelector('.category-icon').src =
+    `/src/assets/${activeIcon}-active.svg`
+}
+
+//always start on stock
+window.addEventListener('load', () => {
+  const stockCategory = document.querySelector(
+    '.category-btn[data-icon="Stock"]'
+  )
+
+  if (stockCategory) {
+    selectCategory(stockCategory)
+  }
+})

@@ -20,6 +20,32 @@
         <p>ASEP'S POS</p>
       </div>
 
+      <div class="flex flex-1 justify-center gap-10">
+        <div data-icon="stock" onclick="selectCategory(this)">
+          <img
+            src="/src/assets/stock.svg"
+            class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10"
+            alt=""
+          />
+        </div>
+
+        <div data-icon="history" onclick="selectCategory(this)">
+          <img
+            src="/src/assets/history.svg"
+            class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10"
+            alt=""
+          />
+        </div>
+
+        <div data-icon="summary" onclick="selectCategory(this)">
+          <img
+            src="/src/assets/summary.svg"
+            class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10"
+            alt=""
+          />
+        </div>
+      </div>
+
       <form action="/logout" method="POST">
         <button
           class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
@@ -40,12 +66,29 @@
         <div
           class="w-88 sm:w-auto flex flex-col gap-4 md:gap-8 lg:gap-12 flex-5 bg-white p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 rounded-xl shadow-xl/20 overflow-y-auto"
         >
-          <div class="flex flex-col sm:flex-row justify-end gap-3 ml-[100px]">
-            <input
-              type="text"
-              placeholder="Search items here"
-              class="w-full sm:w-48 md:w-56 lg:w-[260px] px-2.5 md:px-3 lg:px-3.5 py-1.5 md:py-2 lg:py-2.5 rounded-[40px] border border-[#ccc] text-sm md:text-base"
-            />
+          <div class="flex items-center justify-between mb-4">
+            <button
+              class="flex items-center gap-1 text-[#27DD8E] font-bold text-2xl hover:underline"
+              type="button"
+            >
+              + ADD NEW ITEM
+            </button>
+            <div class="flex flex-col sm:flex-row justify-end gap-3 ml-[100px]">
+              <div class="relative w-full sm:w-48 md:w-56 lg:w-[260px]">
+                <img
+                  src="/src/assets/Searchlogo.svg"
+                  alt="Search"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-60 pointer-events-none"
+                />
+
+                <input
+                  id="searchInput"
+                  type="text"
+                  placeholder="Search items here"
+                  class="w-full pl-9 px-3 py-2 rounded-[40px] border-1 border-[#999] text-sm md:text-base focus:outline-none"
+                />
+              </div>
+            </div>
           </div>
 
           <div
