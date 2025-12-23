@@ -1,72 +1,58 @@
-// IMAGE UPLOAD
-const input = document.getElementById("imageUpload");
-const fileName = document.getElementById("fileName");
-const removeBtn = document.getElementById("removeImage");
-const fakeUpload = document.getElementById("fakeUpload");
-
-input.addEventListener("change", () => {
-  if (input.files.length > 0) {
-    fileName.textContent = input.files[0].name;
-    fileName.classList.remove("hidden");
-
-    removeBtn.classList.remove("hidden");
-
-    fakeUpload.textContent = "Image selected";
-    fakeUpload.classList.remove("text-gray-500");
-    fakeUpload.classList.add("text-green-600");
-  }
-});
-
-removeBtn.addEventListener("click", () => {
-  input.value = "";
-
-  fileName.textContent = "";
-  fileName.classList.add("hidden");
-
-  removeBtn.classList.add("hidden");
-
-  fakeUpload.textContent = "Upload Image";
-  fakeUpload.classList.add("text-gray-500");
-  fakeUpload.classList.remove("text-green-600");
-});
-
-// STOCK CONTROLS
-const minusBtn = document.getElementById("minusStock");
-const plusBtn = document.getElementById("plusStock");
-const stockInput = document.getElementById("stockInput");
-
-plusBtn.addEventListener("click", () => {
-  stockInput.value = Number(stockInput.value) + 1;
-});
-
-minusBtn.addEventListener("click", () => {
-  if (Number(stockInput.value) > 1) {
-    stockInput.value = Number(stockInput.value) - 1;
-  }
-});
-
-// SAVE BUTTON
+// ELEMENTS
+const addItemBtn = document.getElementById("addItemBtn");
+const popup = document.getElementById("addItemPopup");
+const closePopupBtn = document.getElementById("closePopupBtn");
+const discardBtn = document.getElementById("discardBtn");
 const saveBtn = document.getElementById("saveButton");
-const grid = document.getElementById("itemGrid");
+
+const imageUpload = document.getElementById("imageUpload");
+const imagePreviewBtn = document.getElementById("imagePreviewBtn");
+const fileName = document.getElementById("fileName");
 
 const nameInput = document.getElementById("itemName");
 const priceInput = document.getElementById("itemPrice");
+const stockInput = document.getElementById("stockInput");
+const grid = document.getElementById("itemGrid");
 
-saveBtn.addEventListener("click", () => {
-  if (stockInput.value <= 0) {
-    alert("Out of stock");
-    return;
+// OPEN POPUP
+addItemBtn.addEventListener("click", () => {
+  clearInputs();
+  popup.classList.remove("hidden");
+});
+
+// CLOSE POPUP
+function closePopup() {
+  popup.classList.add("hidden");
+}
+
+closePopupBtn.addEventListener("click", closePopup);
+discardBtn.addEventListener("click", closePopup);
+
+// IMAGE PREVIEW
+imageUpload.addEventListener("change", () => {
+  if (imageUpload.files.length > 0) {
+    const file = imageUpload.files[0];
+    const imgURL = URL.createObjectURL(file);
+
+    imagePreviewBtn.innerHTML = `
+      <img src="${imgURL}" class="w-full h-full object-cover rounded-xl" />
+    `;
+
+    fileName.textContent = file.name;
   }
+});
 
-  if (!nameInput.value || !priceInput.value || !input.files[0]) {
+// SAVE ITEM
+saveBtn.addEventListener("click", () => {
+  if (!nameInput.value || !priceInput.value || !imageUpload.files[0]) {
     alert("Please fill all fields");
     return;
   }
 
-  const imgURL = URL.createObjectURL(input.files[0]);
+  const imgURL = URL.createObjectURL(imageUpload.files[0]);
 
   const item = document.createElement("div");
-  item.className = "rounded-md text-center";
+  item.className = "rounded-md text-center bg-white p-2";
 
   item.innerHTML = `
     <img src="${imgURL}" class="aspect-square object-cover rounded-md" />
@@ -76,33 +62,45 @@ saveBtn.addEventListener("click", () => {
 
   grid.appendChild(item);
 
-  stockInput.value = Number(stockInput.value) - 1;
+  clearInputs();
+  closePopup();
 });
 
+// CLEAR FORM
+function clearInputs() {
+  nameInput.value = "";
+  priceInput.value = "";
+  stockInput.value = 1;
+  imageUpload.value = "";
+  fileName.textContent = "";
+
+  imagePreviewBtn.innerHTML = `
+    <span id="imagePlaceholder" class="flex flex-col items-center gap-2">
+      <span class="text-3xl">＋</span>
+      Add Image
+    </span>
+  `;
+}
+
 //search function//
-document.addEventListener('DOMContentLoaded', () => {
-const searchInput = document.getElementById('searchInput')
-const items = document.querySelectorAll(
-  '.grid > div'
-)
+document.addEventListener("DOMContentLoaded", () => {
+  const searchInput = document.getElementById("searchInput");
+  const items = document.querySelectorAll(".grid > div");
 
-searchInput.addEventListener('input', () => {
-  const keyword = searchInput.value.toLowerCase()
+  searchInput.addEventListener("input", () => {
+    const keyword = searchInput.value.toLowerCase();
 
-  items.forEach(item => {
-    const name = item
-      .querySelector('p')
-      .textContent
-      .toLowerCase()
+    items.forEach((item) => {
+      const name = item.querySelector("p").textContent.toLowerCase();
 
-    if (name.includes(keyword)) {
-      item.style.display = ''
-    } else {
-      item.style.display = 'none'
-    }
-  })
-})
-})
+      if (name.includes(keyword)) {
+        item.style.display = "";
+      } else {
+        item.style.display = "none";
+      }
+    });
+  });
+});
 
 //category selection function/
 function selectCategory(activeBtn) {
@@ -122,14 +120,31 @@ function selectCategory(activeBtn) {
   activeImg.src = `/src/assets/${activeIconName}-active.svg`;
 }
 
-
 //always start on stock
-window.addEventListener('load', () => {
-  const stockCategory = document.querySelector(
-    '.category-btn[data-icon="Stock"]'
-  )
+window.addEventListener("load", () => {
+  const stockCategory = document.querySelector('[data-icon="stock"]');
 
   if (stockCategory) {
-    selectCategory(stockCategory)
+    selectCategory(stockCategory);
   }
-})
+});
+
+// Open popup
+addItemBtn.addEventListener("click", () => {
+  popup.classList.remove("hidden");
+  popup.classList.add("flex");
+});
+
+// Close popup
+function closePopup() {
+  popup.classList.add("hidden");
+  popup.classList.remove("flex");
+}
+
+closePopupBtn.addEventListener("click", closePopup);
+discardBtn.addEventListener("click", closePopup);
+
+// Close popup after save
+saveBtn.addEventListener("click", () => {
+  closePopup();
+});
