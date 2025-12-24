@@ -7,111 +7,117 @@
     <title>Manager Main Page</title>
   </head>
 
-  <!-- ADD ITEM POPUP -->
-  <div
-    id="addItemPopup"
-    class="hidden fixed inset-0 bg-black/40 z-50 items-center justify-center"
-  >
-    <div class="bg-[#E0FAEF] rounded-2xl w-[900px] p-8 relative">
-      <!-- CLOSE BUTTON -->
-      <button
-        id="closePopupBtn"
-        class="absolute top-4 right-4 text-xl font-bold cursor-pointer"
-      >
-        ✕
-      </button>
-
-      <h2 class="text-2xl font-bold text-[#105E3C] mb-6">Add New Item</h2>
-
-      <div class="flex gap-6">
-        <!-- LEFT IMAGE -->
-        <div class="flex flex-col items-center gap-3">
-          <button
-            id="imagePreviewBtn"
-            type="button"
-            onclick="imageUpload.click()"
-            class="w-68 h-68 bg-[#137048] text-white rounded-2xl flex items-center justify-center overflow-hidden cursor-pointer"
-          >
-            <span
-              id="imagePlaceholder"
-              class="flex flex-col items-center gap-2"
-            >
-              <span class="text-3xl">＋</span>
-              Add Image
-            </span>
-          </button>
-
-          <span
-            id="fileName"
-            class="text-sm text-green-600 text-center w-40 wrap-break-words"
-          ></span>
-        </div>
-
-        <!-- RIGHT FORM -->
-        <div class="flex-1 space-y-4">
-          <div class="pr-4 pl-4">
-            <h2
-              class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273]"
-            >
-              Name
-            </h2>
-            <input
-              id="itemName"
-              type="text"
-              placeholder="Item Name"
-              class="w-full p-3 rounded-md bg-white"
-            />
-          </div>
-          <div class="pr-4 pl-4">
-            <h2
-              class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273]"
-            >
-              Price
-            </h2>
-            <input
-              id="itemPrice"
-              type="number"
-              placeholder="Price"
-              class="w-full p-3 rounded-md bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              onkeydown="return !['e','E','+','-','.'].includes(event.key)"
-            />
-          </div>
-          <div class="pr-4 pl-4">
-            <h2
-              class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273]"
-            >
-              Stock
-            </h2>
-            <input
-              id="stockInput"
-              type="number"
-              value="1"
-              class="w-full p-3 rounded-md bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              onkeydown="return !['e','E','+','-','.'].includes(event.key)"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div class="flex justify-end gap-4 mt-8">
-        <button id="discardBtn" class="px-6 py-2 border rounded-full">
-          Discard
-        </button>
-
-        <!-- Save button uses your existing save logic -->
-        <button
-          id="saveButton"
-          class="px-6 py-2 bg-[#137048] text-white rounded-full"
-        >
-          Save
-        </button>
-      </div>
-    </div>
-  </div>
-
   <body
     class="bg-[#E0FAEF] m-0 p-0 overflow-hidden gap-6 flex flex-col h-screen"
   >
+    <!-- ADD ITEM POPUP -->
+    <div
+      id="addItemPopup"
+      class="hidden fixed inset-0 bg-black/40 z-50 items-center justify-center"
+    >
+      <div class="bg-[#E0FAEF] rounded-2xl w-[900px] p-8 relative">
+        <!-- CLOSE BUTTON -->
+        <button
+          id="closePopupBtn"
+          class="absolute top-4 right-4 text-xl font-bold cursor-pointer"
+        >
+          ✕
+        </button>
+
+        <h2 class="text-2xl font-bold text-[#105E3C] mb-6">Add New Item</h2>
+        
+        <input
+          id="popupImageUpload"
+          type="file"
+          accept="image/*"
+          class="hidden"
+        />
+
+        <div class="flex gap-6">
+          <!-- LEFT IMAGE -->
+          <div class="flex flex-col items-center gap-3">
+            <button
+              id="imagePreviewBtn"
+              type="button"
+              onclick="document.getElementById('popupImageUpload').click()"
+              class="w-68 h-68 bg-[#137048] text-white rounded-2xl flex items-center justify-center overflow-hidden cursor-pointer"
+            >
+              <span
+                id="popupImagePlaceholder"
+                class="flex flex-col items-center gap-2"
+              >
+                <span class="text-3xl">＋</span>
+                Add Image
+              </span>
+            </button>
+
+            <span
+              id="popupFileName"
+              class="text-sm text-green-600 text-center w-40 wrap-break-words"
+            ></span>
+          </div>
+
+          <!-- RIGHT FORM -->
+          <div class="flex-1 space-y-4">
+            <div class="pr-4 pl-4">
+              <h2
+                class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273]"
+              >
+                Name
+              </h2>
+              <input
+                id="popupItemName"
+                type="text"
+                placeholder="Item Name"
+                class="w-full p-3 rounded-md bg-white"
+              />
+            </div>
+            <div class="pr-4 pl-4">
+              <h2
+                class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273]"
+              >
+                Price
+              </h2>
+              <input
+                id="popupItemPrice"
+                type="number"
+                placeholder="Price"
+                class="w-full p-3 rounded-md bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                onkeydown="return !['e','E','+','-','.'].includes(event.key)"
+              />
+            </div>
+            <div class="pr-4 pl-4">
+              <h2
+                class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273]"
+              >
+                Stock
+              </h2>
+              <input
+                id="popupStockInput"
+                type="number"
+                value="1"
+                class="w-full p-3 rounded-md bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                onkeydown="return !['e','E','+','-','.'].includes(event.key)"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-4 mt-8">
+          <button id="discardBtn" class="px-6 py-2 border rounded-full">
+            Discard
+          </button>
+
+          <button
+            id="popupSaveButton"
+            class="px-6 py-2 bg-[#137048] text-white rounded-full"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+    
     <!-- NAVBAR -->
     <nav
       class="flex items-center justify-between bg-[#137048] shadow-[1px_3px_20px_#181515] px-4 md:px-12 py-3"
@@ -165,7 +171,6 @@
       <!-- COL 1 -->
       <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 flex-1 min-w-0">
         <!-- ITEMS BOX -->
-
         <div
           class="w-88 sm:w-auto flex flex-col gap-4 md:gap-8 lg:gap-12 flex-5 bg-white p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 rounded-xl shadow-xl/20 overflow-y-auto"
         >
@@ -199,43 +204,14 @@
             id="itemGrid"
             class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
           >
-            <div class="rounded-md text-center">
-              <img
-                src="/src/assets/windows-11-stock-black-abstract-black-background-amoled-3840x2400-8971.jpg"
-                class="object-cover aspect-square rounded-md"
-                alt=""
-              />
-              <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">
-                Bertrand Onlyfans
-              </p>
-              <p
-                class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base"
-              >
-                NT$1000
-              </p>
-            </div>
-
-            <div class="rounded-md text-center">
-              <img
-                src="/src/assets/windows-11-stock-black-abstract-black-background-amoled-3840x2400-8971.jpg"
-                class="object-cover aspect-square rounded-md"
-                alt=""
-              />
-              <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">test</p>
-              <p
-                class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base"
-              >
-                NT$1000
-              </p>
-            </div>
+            <!-- Items will be added here dynamically -->
           </div>
         </div>
       </div>
 
       <!-- COL 2 -->
       <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 min-w-0">
-        <!-- CHECKOUT BOX -->
-
+        <!-- EDIT BOX -->
         <div
           class="w-48 sm:w-64 xl:w-lg flex flex-col bg-white rounded-xl shadow-xl/20 overflow-y-auto border-2 border-[#d4cccc] pb-8"
         >
@@ -329,7 +305,7 @@
               <div class="flex items-center gap-3">
                 <button
                   type="button"
-                  onclick="imageUpload.click()"
+                  onclick="document.getElementById('imageUpload').click()"
                   class="p-3 border border-gray-300 rounded-md bg-gray-100 text-left text-gray-500 hover:bg-gray-200 transition"
                   id="fakeUpload"
                 >
@@ -352,17 +328,25 @@
           </div>
         </div>
 
-        <!-- SAVE BUTTON -->
-        <div
-          class="bg-[#27DD8E] rounded-xl shadow-xl/20 flex items-center justify-center h-24 xl:h-32"
-          id="saveButton"
-        >
-          <h2 class="font-bold text-center text-base md:text-lg lg:text-xl">
-            SAVE
-          </h2>
+        <!-- SAVE & DELETE BUTTONS -->
+        <div class="flex gap-6">
+          <button
+            id="saveButton"
+            class="flex-1 h-[100px] bg-[#27DD8E] text-white font-bold text-2xl rounded-xl shadow-xl flex items-center justify-center"
+          >
+            Save
+          </button>
+
+          <button
+            id="deleteButton"
+            class="flex-1 h-[100px] bg-red-500 text-white font-bold text-2xl rounded-xl shadow-xl flex items-center justify-center"
+          >
+            Delete
+          </button>
         </div>
       </div>
     </div>
+    
     <script src="main.js"></script>
   </body>
 </html>
