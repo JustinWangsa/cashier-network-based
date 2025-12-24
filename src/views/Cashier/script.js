@@ -140,8 +140,23 @@ function selectCategory(activeBtn) {
 }
 
 //always start on all//
-window.addEventListener('load', () => {
-  fetchItemList()
+window.addEventListener('load', async () => {
+   
+    let formbody = new FormData();
+    formbody.append("name","google_cs");  
+    formbody.append("password","google_cs");  
+    let result = await (await fetch('http://localhost:3000/db/login_page/log_in',{
+        method:"POST",
+        body:formbody
+    })).text()
+
+    console.log(result);
+   
+  
+
+
+
+    fetchItemList()
   const allCategory = document.querySelector(
     '.category-btn[data-icon="All"]'
   )
@@ -151,8 +166,10 @@ window.addEventListener('load', () => {
   }
 })
 
-function fetchItemList() {
-  fetch('http://localhost:3000/db/stock_page/fetch_item_list')
+
+
+async function fetchItemList() {
+  await fetch('http://localhost:3000/db/stock_page/fetch_item_list')
     .then(res => {
       if (!res.ok) throw new Error('Failed to fetch items')
       return res.json()
@@ -186,3 +203,6 @@ function fetchItemList() {
     })
     .catch(err => console.error('Fetch error:', err))
 }
+
+        
+
