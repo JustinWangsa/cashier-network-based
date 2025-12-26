@@ -80,27 +80,35 @@ function renderCart() {
 //search function//
 document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchInput')
-  const items = document.querySelectorAll(
-    '.grid > div'
-  )
 
   searchInput.addEventListener('input', () => {
     const keyword = searchInput.value.toLowerCase()
+    const items = document.querySelectorAll('#itemGrid > div')
 
     items.forEach(item => {
-      const name = item
-        .querySelector('p')
-        .textContent
-        .toLowerCase()
-
-      if (name.includes(keyword)) {
-        item.style.display = ''
-      } else {
-        item.style.display = 'none'
-      }
+      const name = item.dataset.name.toLowerCase()
+      item.style.display = name.includes(keyword) ? '' : 'none'
     })
   })
 })
+
+searchInput.addEventListener('input', () => {
+  const keyword = searchInput.value.toLowerCase()
+
+  items.forEach(item => {
+    const name = item
+      .querySelector('p')
+      .textContent
+      .toLowerCase()
+
+    if (name.includes(keyword)) {
+      item.style.display = ''
+    } else {
+      item.style.display = 'none'
+    }
+  })
+})
+
 
 //category selection function/
 function selectCategory(activeBtn) {
@@ -132,7 +140,23 @@ function selectCategory(activeBtn) {
 }
 
 //always start on all//
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
+   
+    let formbody = new FormData();
+    formbody.append("name","google_cs");  
+    formbody.append("password","google_cs");  
+    let result = await (await fetch('http://localhost:3000/db/login_page/log_in',{
+        method:"POST",
+        body:formbody
+    })).text()
+
+    console.log(result);
+   
+  
+
+
+
+    fetchItemList()
   const allCategory = document.querySelector(
     '.category-btn[data-icon="All"]'
   )
@@ -141,3 +165,44 @@ window.addEventListener('load', () => {
     selectCategory(allCategory)
   }
 })
+
+
+
+async function fetchItemList() {
+  await fetch('http://localhost:3000/db/stock_page/fetch_item_list')
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to fetch items')
+      return res.json()
+    })
+    .then(items => {
+      const grid = document.getElementById('itemGrid')
+      grid.innerHTML = ''
+
+      items.forEach(item => {
+        const div = document.createElement('div')
+        div.className = 'rounded-md text-center cursor-pointer'
+
+        div.dataset.name = item.name
+        div.dataset.price = item.price
+        div.dataset.image = item.image
+
+        div.addEventListener('click', () => addToCartFromItem(div))
+
+        div.innerHTML = `
+          <img src="${item.image}" class="object-cover aspect-square rounded-md" />
+          <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">
+            ${item.name}
+          </p>
+          <p class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base">
+            NT$${item.price}
+          </p>
+        `
+
+        grid.appendChild(div)
+      })
+    })
+    .catch(err => console.error('Fetch error:', err))
+}
+
+        
+
