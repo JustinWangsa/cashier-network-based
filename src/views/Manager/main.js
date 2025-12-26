@@ -28,10 +28,99 @@ const minusStockBtn = document.getElementById("minusStock");
 const plusStockBtn = document.getElementById("plusStock");
 
 const saveButton = document.getElementById("saveButton");
-const deleteButton = document.getElementById("deleteButton");
 
 const grid = document.getElementById("itemGrid");
 const searchInput = document.getElementById("searchInput");
+
+// FETCH
+async function fetchItemList() {
+  try {
+    const res = await fetch(
+      "http://localhost:3000/db/stock_page/fetch_item_list",
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    console.log("Fetch status:", res.status);
+
+    if (res.status === 200) {
+      const data = await res.json();
+      console.log("Fetched items:", data);
+
+      items = data.map((item) => ({
+        id: item.id,
+        name: item.name,
+        type: item.type,
+        price: item.price,
+        stock: item.currentStock || 0,
+        imageUrl: item.image
+          ? `data:image;base64,${item.image}`
+          : "/src/assets/placeholder.jpg",
+      }));
+
+      renderItems();
+
+      // Auto-select first item
+      if (items.length > 0) {
+        selectItem(0);
+      }
+    } else {
+      console.error("Failed to fetch items");
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+}
+
+// ADD NEW ITEM TO API
+async function addItemToAPI(formData) {
+  try {
+    const res = await fetch("http://localhost:3000/db/stock_page/new_item", {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    if (res.status === 200) {
+      const result = await res.json();
+      console.log("Item added successfully:", result);
+      return true;
+    } else {
+      const errorText = await res.text();
+      console.error("Failed to add item:", errorText);
+      return false;
+    }
+  } catch (error) {
+    console.error("Add item error:", error);
+    return false;
+  }
+}
+
+// UPDATE ITEM
+async function updateItemInAPI(formData) {
+  try {
+    const res = await fetch("http://localhost:3000/db/stock_page/update_item", {
+      method: "POST",
+      credentials: "include",
+      body: formData, // FormData handles multipart/form-data automatically
+    });
+
+    if (res.status === 200) {
+      const result = await res.json();
+      console.log("Item updated successfully:", result);
+      return true;
+    } else {
+      const errorText = await res.text();
+      console.error("Failed to update item:", errorText);
+      return false;
+    }
+  } catch (error) {
+    console.error("Update item error:", error);
+    return false;
+  }
+}
 
 // OPEN POPUP
 addItemBtn.addEventListener("click", () => {
@@ -60,6 +149,38 @@ popupImageUpload.addEventListener("change", () => {
     `;
 
     popupFileName.textContent = file.name;
+  }
+});
+
+// ADD NEW ITEM
+popupSaveBtn.addEventListener("click", async () => {
+  if (
+    !popupNameInput.value ||
+    !popupPriceInput.value ||
+    !popupImageUpload.files[0]
+  ) {
+    alert("Please fill all fields and upload an image");
+    return;
+  }
+
+  // Create FormData
+  const formData = new FormData();
+  formData.append("name", popupNameInput.value);
+  formData.append("type", "Food"); // Default type, you can add a dropdown for this
+  formData.append("stock", parseInt(popupStockInput.value) || 1);
+  formData.append("price", parseInt(popupPriceInput.value));
+  formData.append("icon", popupImageUpload.files[0]); // The actual file
+
+  const success = await addItemToAPI(formData);
+
+  if (success) {
+    // Refresh the item list from server
+    await fetchItemList();
+    alert("Item added successfully!");
+    clearPopupInputs();
+    closePopup();
+  } else {
+    alert("Failed to add item. Please try again.");
   }
 });
 
@@ -93,34 +214,6 @@ plusStockBtn.addEventListener("click", () => {
   editStockInput.value = currentValue + 1;
 });
 
-// ADD NEW ITEM
-popupSaveBtn.addEventListener("click", () => {
-  if (
-    !popupNameInput.value ||
-    !popupPriceInput.value ||
-    !popupImageUpload.files[0]
-  ) {
-    alert("Please fill all fields and upload an image");
-    return;
-  }
-
-  const newItem = {
-    name: popupNameInput.value,
-    price: parseInt(popupPriceInput.value),
-    stock: parseInt(popupStockInput.value) || 1,
-    imageUrl: URL.createObjectURL(popupImageUpload.files[0]),
-  };
-
-  items.push(newItem);
-  renderItems();
-
-  // Auto-select the newly added item
-  selectItem(items.length - 1);
-
-  clearPopupInputs();
-  closePopup();
-});
-
 // RENDER ITEMS IN GRID
 function renderItems() {
   grid.innerHTML = "";
@@ -132,15 +225,15 @@ function renderItems() {
     itemDiv.dataset.index = index;
 
     itemDiv.innerHTML = `
-      <img src="${item.imageUrl}" class="aspect-square object-cover rounded-md" />
+      <img src="${item.imageUrl}" class="aspect-square object-cover rounded-md" alt="${item.name}" />
       <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">${item.name}</p>
-      <p class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base">NT${item.price}</p>
+      <p class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base">NT$${item.price}</p>
       <p class="text-gray-600 text-xs">Stock: ${item.stock}</p>
     `;
 
     itemDiv.addEventListener("click", () => selectItem(index));
 
-    // Highlight if selected with green border
+    // selected = green border
     if (index === selectedItemIndex) {
       itemDiv.classList.add("border-4", "border-[#27DD8E]");
     }
@@ -168,58 +261,48 @@ function selectItem(index) {
 }
 
 // SAVE EDITED ITEM
-saveButton.addEventListener("click", () => {
+saveButton.addEventListener("click", async () => {
   if (selectedItemIndex === null) {
     alert("No item selected");
     return;
   }
 
   if (!editNameInput.value || !editPriceInput.value) {
-    alert("Please fill all fields");
+    alert("Please fill all required fields");
     return;
   }
 
-  items[selectedItemIndex].name = editNameInput.value;
-  items[selectedItemIndex].price = parseInt(editPriceInput.value);
-  items[selectedItemIndex].stock = parseInt(editStockInput.value) || 0;
+  const item = items[selectedItemIndex];
 
-  // Update image if new one uploaded
+  const formData = new FormData();
+  formData.append("item_id", item.id);
+  if (editNameInput.value !== item.name) {
+    formData.append("name", editNameInput.value);
+  }
+  if (item.type) {
+    formData.append("type", item.type);
+  }
   if (editImageUpload.files.length > 0) {
-    items[selectedItemIndex].imageUrl = URL.createObjectURL(
-      editImageUpload.files[0]
-    );
+    formData.append("icon", editImageUpload.files[0]);
   }
 
-  renderItems();
-  alert("Item updated successfully!");
-});
+  formData.append("stock", parseInt(editStockInput.value) || 0);
+  formData.append("price", parseInt(editPriceInput.value));
 
-// DELETE ITEM
-deleteButton.addEventListener("click", () => {
-  if (selectedItemIndex === null) {
-    alert("No item selected");
-    return;
-  }
+  const success = await updateItemInAPI(formData);
 
-  if (confirm("Are you sure you want to delete this item?")) {
-    items.splice(selectedItemIndex, 1);
+  if (success) {
+    // Refresh the item 
+    await fetchItemList();
 
-    if (items.length > 0) {
-      selectedItemIndex = 0;
-    } else {
-      selectedItemIndex = null;
-    }
-
-    renderItems();
-
-    if (selectedItemIndex !== null) {
+    // Reselect the item at the same position
+    if (items.length > selectedItemIndex) {
       selectItem(selectedItemIndex);
-    } else {
-      // Clear edit panel
-      editNameInput.value = "";
-      editPriceInput.value = "";
-      editStockInput.value = "1";
     }
+
+    alert("Item updated successfully!");
+  } else {
+    alert("Failed to update item. Please try again.");
   }
 });
 
@@ -270,35 +353,10 @@ function selectCategory(activeBtn) {
   activeImg.src = `/src/assets/${activeIconName}-active.svg`;
 }
 
-// INITIALIZE - Start on stock category
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
   const stockCategory = document.querySelector('[data-icon="stock"]');
   if (stockCategory) {
     selectCategory(stockCategory);
   }
-
-  // Add some sample items for testing
-  items = [
-    {
-      name: "Bertrand Onlyfans",
-      price: 1000,
-      stock: 10,
-      imageUrl:
-        "/src/assets/windows-11-stock-black-abstract-black-background-amoled-3840x2400-8971.jpg",
-    },
-    {
-      name: "Test Item",
-      price: 1500,
-      stock: 5,
-      imageUrl:
-        "/src/assets/windows-11-stock-black-abstract-black-background-amoled-3840x2400-8971.jpg",
-    },
-  ];
-
-  renderItems();
-
-  // Auto-select first item
-  if (items.length > 0) {
-    selectItem(0);
-  }
+  await fetchItemList();
 });

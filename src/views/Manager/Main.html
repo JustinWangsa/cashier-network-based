@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="../../output.css" rel="stylesheet" />
     <title>Manager Main Page</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Aclonica&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Press+Start+2P&family=Young+Serif&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body
@@ -19,18 +27,19 @@
         <!-- CLOSE BUTTON -->
         <button
           id="closePopupBtn"
-          class="absolute top-4 right-4 text-xl font-bold cursor-pointer"
+          class="absolute top-4 right-4 text-xl font-bold cursor-pointer font-['inter']"
         >
           ✕
         </button>
 
         <h2 class="text-2xl font-bold text-[#105E3C] mb-6">Add New Item</h2>
-        
+
         <input
           id="popupImageUpload"
           type="file"
           accept="image/*"
           class="hidden"
+          placeholder="."
         />
 
         <div class="flex gap-6">
@@ -44,9 +53,9 @@
             >
               <span
                 id="popupImagePlaceholder"
-                class="flex flex-col items-center gap-2"
+                class="flex flex-col items-center gap-2 font-['inter']"
               >
-                <span class="text-3xl">＋</span>
+                <span class="text-3xl font-['inter']">＋</span>
                 Add Image
               </span>
             </button>
@@ -61,7 +70,7 @@
           <div class="flex-1 space-y-4">
             <div class="pr-4 pl-4">
               <h2
-                class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273]"
+                class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273] font-['inter']"
               >
                 Name
               </h2>
@@ -74,7 +83,7 @@
             </div>
             <div class="pr-4 pl-4">
               <h2
-                class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273]"
+                class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273] font-['inter']"
               >
                 Price
               </h2>
@@ -88,7 +97,7 @@
             </div>
             <div class="pr-4 pl-4">
               <h2
-                class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273]"
+                class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273] font-['inter']"
               >
                 Stock
               </h2>
@@ -96,6 +105,7 @@
                 id="popupStockInput"
                 type="number"
                 value="1"
+                placeholder="."
                 class="w-full p-3 rounded-md bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 onkeydown="return !['e','E','+','-','.'].includes(event.key)"
               />
@@ -104,20 +114,23 @@
         </div>
 
         <div class="flex justify-end gap-4 mt-8">
-          <button id="discardBtn" class="px-6 py-2 border rounded-full">
+          <button
+            id="discardBtn"
+            class="px-6 py-2 border rounded-full font-['inter']"
+          >
             Discard
           </button>
 
           <button
             id="popupSaveButton"
-            class="px-6 py-2 bg-[#137048] text-white rounded-full"
+            class="px-6 py-2 bg-[#137048] text-white rounded-full font-['inter']"
           >
             Save
           </button>
         </div>
       </div>
     </div>
-    
+
     <!-- NAVBAR -->
     <nav
       class="flex items-center justify-between bg-[#137048] shadow-[1px_3px_20px_#181515] px-4 md:px-12 py-3"
@@ -126,7 +139,7 @@
         class="flex items-center gap-4 md:gap-7 text-[22px] md:text-[30px] font-bold text-white drop-shadow-[2px_2px_8px_#181515]"
       >
         <img src="/src/assets/Logo.svg" class="w-[35px] md:w-10" alt="" />
-        <p>ASEP'S POS</p>
+        <p class="font-['Aclonica']">ASEP'S POS</p>
       </div>
 
       <div class="flex flex-1 justify-center gap-20">
@@ -157,7 +170,7 @@
 
       <form action="/logout" method="POST">
         <button
-          class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
+          class="bg-[#CDF7E5] text-[#1A955F] font-['inter'] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
           type="submit"
         >
           Logout
@@ -176,7 +189,7 @@
         >
           <div class="flex items-center justify-between mb-4">
             <button
-              class="flex items-center gap-1 text-[#27DD8E] font-bold text-2xl cursor-pointer"
+              class="flex items-center gap-1 text-[#27DD8E] font-bold text-2xl cursor-pointer font-['inter']"
               type="button"
               id="addItemBtn"
             >
@@ -187,14 +200,14 @@
                 <img
                   src="/src/assets/Searchlogo.svg"
                   alt="Search"
-                  class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-60 pointer-events-none"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-60 pointer-events-none font-['inter']"
                 />
 
                 <input
                   id="searchInput"
                   type="text"
                   placeholder="Search items here"
-                  class="w-full pl-9 px-3 py-2 rounded-[40px] border-1 border-[#999] text-sm md:text-base focus:outline-none"
+                  class="w-full pl-9 px-3 py-2 rounded-[40px] border border-[#999] text-sm md:text-base focus:outline-none font-['inter']"
                 />
               </div>
             </div>
@@ -202,10 +215,8 @@
 
           <div
             id="itemGrid"
-            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
-          >
-            <!-- Items will be added here dynamically -->
-          </div>
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 font-['inter']"
+          ></div>
         </div>
       </div>
 
@@ -213,13 +224,13 @@
       <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 min-w-0">
         <!-- EDIT BOX -->
         <div
-          class="w-48 sm:w-64 xl:w-lg flex flex-col bg-white rounded-xl shadow-xl/20 overflow-y-auto border-2 border-[#d4cccc] pb-8"
+          class="w-48 sm:w-64 xl:w-lg flex flex-col bg-white rounded-xl shadow-xl/20 overflow-y-auto border-2 border-[#d4cccc] pb-8 font-['inter']"
         >
           <div
             class="flex flex-col gap-4 p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 border-b-3 border-[#ccc]"
           >
             <h2
-              class="font-bold text-center text-[35px] md:text-[22px] lg:text-[25px] text-[#105E3C]"
+              class="font-bold text-center text-[35px] md:text-[22px] lg:text-[25px] text-[#105E3C] font-['inter']"
             >
               Description
             </h2>
@@ -229,7 +240,7 @@
           <div>
             <div class="pr-4 pl-4 pt-4">
               <h2
-                class="font-bold text-[35px] md:text-[22px] lg:text-[25px] text-[#36A273]"
+                class="font-bold text-[35px] md:text-[22px] lg:text-[25px] text-[#36A273] font-['inter']"
               >
                 Name
               </h2>
@@ -244,7 +255,7 @@
 
             <div class="pr-4 pl-4 pt-4">
               <h2
-                class="font-bold text-[35px] md:text-[22px] lg:text-[25px] text-[#36A273]"
+                class="font-bold text-[35px] md:text-[22px] lg:text-[25px] text-[#36A273] font-['inter']"
               >
                 Price
               </h2>
@@ -260,14 +271,14 @@
 
             <div class="pr-4 pl-4 pt-4">
               <p
-                class="font-bold text-[35px] md:text-[22px] lg:text-[25px] text-[#36A273]"
+                class="font-bold text-[35px] md:text-[22px] lg:text-[25px] text-[#36A273] font-['inter']"
               >
                 Stock
               </p>
               <div class="flex items-center gap-3 mt-2">
                 <button
                   id="minusStock"
-                  class="w-8 h-8 bg-gray-200 rounded font-bold"
+                  class="w-8 h-8 bg-gray-200 rounded font-bold font-['inter']"
                 >
                   −
                 </button>
@@ -277,11 +288,11 @@
                   value="1"
                   required
                   placeholder="."
-                  class="w-16 h-8 rounded bg-gray-100 text-center px-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  class="w-16 h-8 rounded bg-gray-100 text-center px-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none font-['inter']"
                 />
                 <button
                   id="plusStock"
-                  class="w-8 h-8 bg-gray-200 rounded font-bold"
+                  class="w-8 h-8 bg-gray-200 rounded font-bold font-['inter']"
                 >
                   +
                 </button>
@@ -290,11 +301,10 @@
 
             <div class="pr-4 pl-4 pt-4">
               <p
-                class="font-bold text-[35px] md:text-[22px] lg:text-[25px] text-[#36A273]"
+                class="font-bold text-[35px] md:text-[22px] lg:text-[25px] text-[#36A273] font-['Inter']"
               >
                 Image
               </p>
-              <!-- Hidden real file input -->
               <input
                 id="imageUpload"
                 type="file"
@@ -306,7 +316,7 @@
                 <button
                   type="button"
                   onclick="document.getElementById('imageUpload').click()"
-                  class="p-3 border border-gray-300 rounded-md bg-gray-100 text-left text-gray-500 hover:bg-gray-200 transition"
+                  class="p-3 border border-gray-300 rounded-md bg-gray-100 text-left text-gray-500 hover:bg-gray-200 transition font-['inter']"
                   id="fakeUpload"
                 >
                   Upload Image
@@ -318,7 +328,7 @@
                   ></span>
                   <button
                     id="removeImage"
-                    class="text-[#7B7B7B] rounded text-sm hidden"
+                    class="text-[#7B7B7B] rounded text-sm hidden font-['inter']"
                   >
                     X
                   </button>
@@ -328,25 +338,15 @@
           </div>
         </div>
 
-        <!-- SAVE & DELETE BUTTONS -->
-        <div class="flex gap-6">
-          <button
-            id="saveButton"
-            class="flex-1 h-[100px] bg-[#27DD8E] text-white font-bold text-2xl rounded-xl shadow-xl flex items-center justify-center"
-          >
-            Save
-          </button>
-
-          <button
-            id="deleteButton"
-            class="flex-1 h-[100px] bg-red-500 text-white font-bold text-2xl rounded-xl shadow-xl flex items-center justify-center"
-          >
-            Delete
-          </button>
-        </div>
+        <button
+          id="saveButton"
+          class="h-[100px] bg-[#27DD8E] text-white font-bold text-2xl rounded-xl shadow-xl flex items-center justify-center hover:bg-[#22c77e] transition-colors font-['inter']"
+        >
+          Save
+        </button>
       </div>
     </div>
-    
+
     <script src="main.js"></script>
   </body>
 </html>
