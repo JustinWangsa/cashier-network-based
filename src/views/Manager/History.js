@@ -361,9 +361,7 @@ function updateReturnTotal() {
 
 async function initializeApp() {
   document.getElementById('currentDate').textContent = formatDate(currentDateObj);
-
   await fetchTransactionHistory();
-
   loadTransactionsForDate();
 }
 
