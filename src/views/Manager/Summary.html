@@ -4,10 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="../../output.css" rel="stylesheet" />
-    <script src="/script.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Aclonica&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Aclonica&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body
@@ -20,11 +22,7 @@
       <div
         class="flex items-center gap-4 md:gap-7 text-[22px] md:text-[30px] font-bold text-white drop-shadow-[2px_2px_8px_#181515]"
       >
-        <img
-          src="/src/assets/Logo.svg"
-          class="w-[35px] md:w-10"
-          alt=""
-        />
+        <img src="/src/assets/Logo.svg" class="w-[35px] md:w-10" alt="" />
         <p class="font-['Aclonica']">ASEP'S POS</p>
       </div>
 
@@ -37,94 +35,85 @@
       </form>
     </nav>
 
-    <div 
-      class="flex-1 overflow-y-auto px-6 py-6 space-y-6"
-    >
+    <div class="flex-1 overflow-y-auto px-6 py-6 space-y-6">
       <!-- TOP ROW BOX-->
-      <div 
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-      >
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Revenue -->
         <div
-          class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex items-center gap-4"
+          class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col gap-4"
         >
-          <img
-            src="/src/assets/sale.svg" 
-            class="w-10 h-10 shrink-0"
-          />
-          <div>
-            <p class="text-sm text-gray-500">Total Revenue</p>
-            <p class="text-2xl font-bold">$215,860</p>
+          <div class="flex items-center gap-4">
+            <img src="/src/assets/sale.svg" class="w-10 h-10 shrink-0" />
+            <div>
+              <p class="text-sm text-gray-500">Total Revenue</p>
+              <p class="text-2xl font-bold">$215,860</p>
+            </div>
           </div>
         </div>
 
+        <!-- Total Order -->
         <div
-          class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex items-center gap-4"
+          class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col gap-4"
         >
-          <img
-            src="/src/assets/order.svg" 
-            class="w-10 h-10 shrink-0"
-          />
-          <div>
-            <p class="text-sm text-gray-500">Total Order</p>
-            <p class="text-2xl font-bold">$215,860</p>
+          <div class="flex items-center gap-4">
+            <img src="/src/assets/order.svg" class="w-10 h-10 shrink-0" />
+            <div>
+              <p class="text-sm text-gray-500">Total Order</p>
+              <p class="text-2xl font-bold">$215,860</p>
+            </div>
           </div>
         </div>
 
+        <!-- Total Customer -->
         <div
-          class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex items-center gap-4"
+          class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col gap-4"
         >
-          <img
-            src="/src/assets/Customer.svg" 
-            class="w-10 h-10 shrink-0"
-          />
-          <div>
-            <p class="text-sm text-gray-500">Total Customer</p>
-            <p class="text-2xl font-bold">$215,860</p>
+          <div class="flex items-center gap-4">
+            <img src="/src/assets/Customer.svg" class="w-10 h-10 shrink-0" />
+            <div>
+              <p class="text-sm text-gray-500">Total Customer</p>
+              <p class="text-2xl font-bold">$215,860</p>
+            </div>
           </div>
         </div>
 
+        <!-- Total Sale -->
         <div
-          class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex items-center gap-4"
+          class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col gap-4"
         >
-          <img
-            src="/src/assets/chart.svg" 
-            class="w-10 h-10 shrink-0"
-          />
-          <div>
-            <p class="text-sm text-gray-500">Total Sale</p>
-            <p class="text-2xl font-bold">$215,860</p>
+          <div class="flex items-center gap-4">
+            <img src="/src/assets/chart.svg" class="w-10 h-10 shrink-0" />
+            <div>
+              <p class="text-sm text-gray-500">Total Sale</p>
+              <p class="text-2xl font-bold">$215,860</p>
+            </div>
           </div>
         </div>
       </div>
-
       <!-- BOTTOM ROW : 2 LARGE BOXES -->
-      <div 
-        class="grid grid-cols-1 lg:grid-cols-3 gap-6"
-      >
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- BOX 5 (wide) -->
         <div
           class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-[0_6px_20px_rgba(0,0,0,0.08)]"
         >
           <h2 class="font-bold text-lg mb-4">Sales & Revenue</h2>
-          <div
-            class="h-72 flex items-center justify-center text-gray-400"
-          >
+          <div class="h-72 flex items-center justify-center text-gray-400">
             <!-- Line chart -->
           </div>
         </div>
 
         <!-- BOX 6 -->
         <div
-          class="bg-white rounded-2xl p-6 shadow-[0_6px_20px_rgba(0,0,0,0.08)]"
+          class="lg:col-span-1 bg-white rounded-2xl p-6 shadow-[0_6px_20px_rgba(0,0,0,0.08)]"
         >
           <h2 class="font-bold text-lg mb-4">Best Selling Food</h2>
-          <div
-            class="h-72 flex items-center justify-center text-gray-400"
-          >
-            <!--Donut chart-->  
+          <div class="h-72 flex items-center justify-center text-gray-400">
+            <!--Donut chart-->
           </div>
         </div>
       </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="Summary.js"></script>
   </body>
 </html>
