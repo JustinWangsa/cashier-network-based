@@ -3,43 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="./output.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <title>Login</title>
   </head>
   <body class="min-h-screen bg-[#E0FAEF]">
     <div class="grid grid-cols-6 grid-rows-4 gap-5">
       <div class="col-span-3 row-span-4">
         <img
-          src="./src/assets/login_img.svg"
+          src="/src/assets/login_img.svg"
           alt="Login_img"
           class="h-lvh max-lg:h-auto"
         />
       </div>
-
       <div class="col-span-3 row-span-4 col-start-4 flex items-center">
-        <form
-          class="w-full max-w-md space-y-6 max-lg:w-xs"
-          action="./src/Cashier/cashier.html"
-        >
+        <form class="w-full max-w-md space-y-6 max-lg:w-xs">
           <h1 class="text-4xl font-medium mb-13">LOGIN</h1>
 
           <!-- id -->
-
           <div class="space-y-1 border-b flex items-center gap-2">
             <label for="userId" class="text-lg font-medium"></label>
             <ion-icon name="person-outline"></ion-icon>
             <input
               id="userId"
-              type="number"
               required
               placeholder="ID"
               class="outline-none flex-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              onkeydown="return !['e','E','+','-','.'].includes(event.key)"
             />
           </div>
 
           <!-- password -->
-
           <div class="space-y-1 border-b flex items-center gap-2">
             <label for="Password" class="text-lg font-medium"></label>
 
@@ -80,6 +72,6 @@
       nomodule
       src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
     ></script>
-    <script src="/Login.js"></script>
+    <script src="/src/views/login/login.js"></script>
   </body>
 </html>
