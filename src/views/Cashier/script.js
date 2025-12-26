@@ -1,48 +1,46 @@
 //add cart function//
-const cart = {}
+const cart = {};
 
 function addToCart(name, price, image) {
   if (cart[name]) {
-    cart[name].qty++
+    cart[name].qty++;
   } else {
-    cart[name] = { price, qty: 1, image }
+    cart[name] = { price, qty: 1, image };
   }
-  renderCart()
+  renderCart();
 }
 
 function addToCartFromItem(itemEl) {
-  const name = itemEl.dataset.name
-  const price = Number(itemEl.dataset.price)
-  const image = itemEl.dataset.image
+  const name = itemEl.dataset.name;
+  const price = Number(itemEl.dataset.price);
+  const image = itemEl.dataset.image;
 
-  addToCart(name, price, image)
+  addToCart(name, price, image);
 }
 
 function changeQty(name, delta) {
-  cart[name].qty += delta
+  cart[name].qty += delta;
 
   if (cart[name].qty <= 0) {
-    delete cart[name]
+    delete cart[name];
   }
-  renderCart()
+  renderCart();
 }
 
 function removeItem(name) {
-  delete cart[name]
-  renderCart()
+  delete cart[name];
+  renderCart();
 }
 
 function renderCart() {
-  const cartItems = document.getElementById('cartItems')
-  const totalPriceEl = document.getElementById('totalPrice')
-  
-  cartItems.innerHTML = ''
-  let total = 0
+  const cartItems = document.getElementById("cartItems");
+  const totalPriceEl = document.getElementById("totalPrice");
 
+  cartItems.innerHTML = "";
+  let total = 0;
 
   Object.entries(cart).forEach(([name, item]) => {
-
-    total += item.price * item.qty
+    total += item.price * item.qty;
 
     cartItems.innerHTML += `
       <div class="flex items-center justify-between px-4 py-3 font-bold text-[#4B4B4B] text-[4px]">
@@ -71,73 +69,146 @@ function renderCart() {
           NT$${item.price * item.qty}
         </p>
       </div>
-    `
-  })
-  
-  totalPriceEl.textContent = `NT$${total}`
+    `;
+  });
+
+  totalPriceEl.textContent = `NT$${total}`;
 }
 
 //search function//
-document.addEventListener('DOMContentLoaded', () => {
-  const searchInput = document.getElementById('searchInput')
-  const items = document.querySelectorAll(
-    '.grid > div'
-  )
+const searchInput = document.getElementById("searchInput");
 
-  searchInput.addEventListener('input', () => {
-    const keyword = searchInput.value.toLowerCase()
+searchInput.addEventListener("input", () => {
+  const keyword = searchInput.value.toLowerCase();
+  const items = document.querySelectorAll("#itemGrid > div");
 
-    items.forEach(item => {
-      const name = item
-        .querySelector('p')
-        .textContent
-        .toLowerCase()
-
-      if (name.includes(keyword)) {
-        item.style.display = ''
-      } else {
-        item.style.display = 'none'
-      }
-    })
-  })
-})
-
+  items.forEach((item) => {
+    const name = item.querySelector("p").textContent.toLowerCase();
+    item.style.display = name.includes(keyword) ? "" : "none";
+  });
+});
 //category selection function/
 function selectCategory(activeBtn) {
-  const buttons = document.querySelectorAll('.category-btn')
+  const buttons = document.querySelectorAll(".category-btn");
 
-  buttons.forEach(btn => {
-    btn.classList.remove('border-[#27DD8E]')
-    btn.classList.add('border-[#C0C0C0]')
+  buttons.forEach((btn) => {
+    btn.classList.remove("border-[#27DD8E]");
+    btn.classList.add("border-[#C0C0C0]");
 
-    const text = btn.querySelector('.category-text')
-    text.classList.remove('text-[#105E3C]')
-    text.classList.add('text-[#C0C0C0]')
+    const text = btn.querySelector(".category-text");
+    text.classList.remove("text-[#105E3C]");
+    text.classList.add("text-[#C0C0C0]");
 
-    const iconName = btn.dataset.icon
-    btn.querySelector('.category-icon').src =
-      `/src/assets/${iconName}.svg`
-  })
+    const iconName = btn.dataset.icon;
+    btn.querySelector(".category-icon").src = `/src/assets/${iconName}.svg`;
+  });
 
-  activeBtn.classList.remove('border-[#C0C0C0]')
-  activeBtn.classList.add('border-[#27DD8E]')
+  activeBtn.classList.remove("border-[#C0C0C0]");
+  activeBtn.classList.add("border-[#27DD8E]");
 
-  const activeText = activeBtn.querySelector('.category-text')
-  activeText.classList.remove('text-[#C0C0C0]')
-  activeText.classList.add('text-[#105E3C]')
+  const activeText = activeBtn.querySelector(".category-text");
+  activeText.classList.remove("text-[#C0C0C0]");
+  activeText.classList.add("text-[#105E3C]");
 
-  const activeIcon = activeBtn.dataset.icon
-  activeBtn.querySelector('.category-icon').src =
-    `/src/assets/${activeIcon}-active.svg`
+  const activeIcon = activeBtn.dataset.icon;
+  activeBtn.querySelector(
+    ".category-icon"
+  ).src = `/src/assets/${activeIcon}-active.svg`;
 }
 
-//always start on all//
-window.addEventListener('load', () => {
-  const allCategory = document.querySelector(
-    '.category-btn[data-icon="All"]'
-  )
+// async function fetchItemList() {
+//   await fetch("http://localhost:3000/db/stock_page/fetch_item_list")
+//     .then((res) => {
+//       if (!res.ok) throw new Error("Failed to fetch items");
+//       return res.json();
+//     })
+//     .then((items) => {
+//       const grid = document.getElementById("itemGrid");
+//       grid.innerHTML = "";
+
+//       items.forEach((item) => {
+//         const div = document.createElement("div");
+//         div.className = "rounded-md text-center cursor-pointer";
+
+//         div.dataset.name = item.name;
+//         div.dataset.price = item.price;
+//         div.dataset.image = item.image;
+
+//         div.addEventListener("click", () => addToCartFromItem(div));
+
+//         div.innerHTML = `
+//           <img src="${item.image}" class="object-cover aspect-square rounded-md" />
+//           <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">
+//             ${item.name}
+//           </p>
+//           <p class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base">
+//             NT$${item.price}
+//           </p>
+//         `;
+
+//         grid.appendChild(div);
+//       });
+//     })
+//     .catch((err) => console.error("Fetch error:", err));
+// }
+
+async function fetchItemList() {
+  try {
+    const res = await fetch(
+      "http://localhost:3000/db/stock_page/fetch_item_list",
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    console.log(res.status);
+
+    if (res.status === 200) {
+      const data = await res.json();
+      console.log(data);
+
+      // Get the grid container
+      const grid = document.getElementById("itemGrid");
+      grid.innerHTML = "";
+
+      // Loop through each item and create elements
+      data.forEach((item) => {
+        const div = document.createElement("div");
+        div.className = "rounded-md text-center cursor-pointer";
+
+        div.dataset.name = item.name;
+        div.dataset.price = item.price;
+        div.dataset.image = item.image || "/src/assets/placeholder.jpg"; // fallback image
+
+        div.addEventListener("click", () => addToCartFromItem(div));
+
+        div.innerHTML = `
+          <img src="${item.image || "/src/assets/placeholder.jpg"}" 
+               class="object-cover aspect-square rounded-md" 
+               alt0"${item.name}" />
+          <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">
+            ${item.name}
+          </p>
+          <p class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base">
+            NT$${item.price}
+          </p>
+        `;
+
+        grid.appendChild(div);
+      });
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+}
+
+window.addEventListener("load", () => {
+  const allCategory = document.querySelector('.category-btn[data-icon="All"]');
+
+  fetchItemList();
 
   if (allCategory) {
-    selectCategory(allCategory)
+    selectCategory(allCategory);
   }
-})
+});
