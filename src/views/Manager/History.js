@@ -33,7 +33,6 @@ async function handleLogout(event) {
     window.location.href = '../login/login.html';
   } catch (error) {
     console.error('Logout error:', error);
-    // Still redirect even if logout fails
     window.location.href = '../login/login.html';
   }
 }
@@ -41,7 +40,7 @@ async function handleLogout(event) {
 // Fetch item list from API
 async function fetchItemList() {
   try {
-    const response = await fetch(`${API_BASE_URL}/summary_page/high_level`, {
+    const response = await fetch(`${API_BASE_URL}/db/stock_page/fetch_item_list`, {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -53,7 +52,6 @@ async function fetchItemList() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    // Check if response is JSON
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       const text = await response.text();
@@ -84,14 +82,15 @@ async function fetchItemList() {
     
   } catch (error) {
     console.error('Error fetching item list:', error);
+    throw error;
   }
 }
 
-// Fetch transaction history from API (only 5 most recent)
+// Fetch all transaction history with prices
 async function fetchTransactionHistory() {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/db/transaction_page/fetch_transaction_history`,
+      `${API_BASE_URL}/db/summary_page/high_level`,
       {
         method: 'GET',
         credentials: 'include',
@@ -105,7 +104,6 @@ async function fetchTransactionHistory() {
       throw new Error(`HTTP error: ${response.status}`);
     }
 
-    // Check if response is JSON
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       const text = await response.text();
@@ -117,10 +115,23 @@ async function fetchTransactionHistory() {
       throw new Error('Invalid response from server: ' + text);
     }
 
-    const transactions = await response.json();
-    console.log('Raw transactions from API (5 most recent):', transactions);
+    const allTransactions = await response.json();
+    console.log('All transactions from API:', allTransactions);
     
-    return transactions;
+    // Get only the 5 most recent unique transaction times
+    const uniqueTimes = [...new Set(allTransactions.map(tx => new Date(tx.time).getTime()))];
+    uniqueTimes.sort((a, b) => b - a); // Sort descending (newest first)
+    const recentTimes = new Set(uniqueTimes.slice(0, 5));
+    
+    console.log('5 most recent times:', Array.from(recentTimes).map(t => new Date(t)));
+    
+    // Filter to only include transactions from these 5 most recent times
+    const recentTransactions = allTransactions.filter(tx => 
+      recentTimes.has(new Date(tx.time).getTime())
+    );
+    
+    console.log('Filtered transactions:', recentTransactions);
+    return recentTransactions;
 
   } catch (error) {
     console.log('Error fetching transaction history:', error);
@@ -144,20 +155,16 @@ function processTransactionData(transactions) {
       };
     }
     
-    // Get item details
-    const item = itemsList[tx.item_id];
-    if (item) {
-      const itemTotal = tx.count * item.price;
-      groupedByTime[timeKey].items.push({
-        name: item.name,
-        qty: tx.count,
-        price: itemTotal,
-        item_id: tx.item_id
-      });
-      groupedByTime[timeKey].total += itemTotal;
-    } else {
-      console.warn(`Item ${tx.item_id} not found in itemsList`);
-    }
+    // Use data directly from the transaction (it already has price and name)
+    const itemTotal = tx.count * tx.price;
+    groupedByTime[timeKey].items.push({
+      name: tx.name,
+      qty: tx.count,
+      price: itemTotal,
+      item_id: tx.item_id,
+      pricePerUnit: tx.price
+    });
+    groupedByTime[timeKey].total += itemTotal;
   });
   
   console.log('Grouped transactions by time:', groupedByTime);
@@ -185,7 +192,7 @@ function processTransactionData(transactions) {
   // Sort by time (newest first)
   allTransactions.sort((a, b) => b.originalTime - a.originalTime);
   
-  console.log('Processed 5 most recent transactions:', allTransactions);
+  console.log('Processed transactions:', allTransactions);
 }
 
 // Load transactions
@@ -232,6 +239,11 @@ function searchTransactions() {
   }
   
   renderTransactions();
+  
+  // Load first transaction in filtered results
+  if (filteredTransactions.length > 0) {
+    loadTransaction(0);
+  }
 }
 
 // Render transaction list
@@ -320,17 +332,19 @@ function renderCheckoutItems() {
     itemDiv.className = 'grid grid-cols-[2fr_1fr_1fr] gap-4 py-4 border-b border-gray-200 items-center';
     
     if (isReturnMode) {
-      const pricePerUnit = item.price / item.qty;
+      // In return mode, show quantity controls
+      const sanitizedName = item.name.replace(/[^a-zA-Z0-9]/g, '-');
       itemDiv.innerHTML = `
         <div class="text-sm">${item.name}</div>
         <div class="flex items-center justify-center gap-2">
           <button onclick="decrementQty('${item.name}')" class="w-6 h-6 rounded-full bg-[#27DD8E] text-white flex items-center justify-center hover:bg-[#1FC878] transition text-lg leading-none">−</button>
-          <span class="text-sm w-6 text-center" id="qty-${item.name.replace(/\s/g, '-')}">${returnQuantities[item.name]}</span>
+          <span class="text-sm w-6 text-center" id="qty-${sanitizedName}">${returnQuantities[item.name] || 0}</span>
           <button onclick="incrementQty('${item.name}', ${Math.abs(item.qty)})" class="w-6 h-6 rounded-full bg-[#27DD8E] text-white flex items-center justify-center hover:bg-[#1FC878] transition text-lg leading-none">+</button>
         </div>
-        <div class="text-right text-sm" id="price-${item.name.replace(/\s/g, '-')}">${Math.round(pricePerUnit * returnQuantities[item.name])}元</div>
+        <div class="text-right text-sm" id="price-${sanitizedName}">${Math.round(item.pricePerUnit * (returnQuantities[item.name] || 0))}元</div>
       `;
     } else {
+      // Normal view
       itemDiv.innerHTML = `
         <div class="text-sm">${item.name}</div>
         <div class="text-center text-sm">${item.qty}</div>
@@ -345,7 +359,10 @@ function renderCheckoutItems() {
   const mainTotal = document.getElementById('mainTotal');
   if (mainTotal) {
     if (isReturnMode) {
-      mainTotal.textContent = `0元`;
+      const returnTotal = currentTransaction.items.reduce((sum, item) => {
+        return sum + (item.pricePerUnit * (returnQuantities[item.name] || 0));
+      }, 0);
+      mainTotal.textContent = `${Math.round(returnTotal)}元`;
     } else {
       mainTotal.textContent = `${currentTransaction.total}元`;
     }
@@ -388,16 +405,39 @@ function toggleReturnView() {
 
 // Save return transaction
 async function saveReturn() {
-  // Calculate returned items
-  const returnedItems = currentTransaction.items.map(item => ({
-    name: item.name,
-    qty: -returnQuantities[item.name],
-    price: -(item.price / item.qty) * returnQuantities[item.name],
-    item_id: item.item_id
-  })).filter(item => item.qty !== 0);
+  // Calculate returned items (negative quantities)
+  const returnedItems = currentTransaction.items
+    .filter(item => (returnQuantities[item.name] || 0) > 0)
+    .map(item => ({
+      item_id: item.item_id,
+      name: item.name,
+      count: -(returnQuantities[item.name]),  // Negative for returns
+      pricePerUnit: item.pricePerUnit
+    }));
   
   if (returnedItems.length === 0) {
     alert('No items to return');
+    return;
+  }
+  
+  // Calculate return total for confirmation
+  const returnTotal = returnedItems.reduce((sum, item) => {
+    return sum + (item.pricePerUnit * Math.abs(item.count));
+  }, 0);
+  
+  console.log('=== RETURN DEBUG ===');
+  console.log('Current transaction:', currentTransaction);
+  console.log('Return quantities:', returnQuantities);
+  console.log('Returned items with details:');
+  returnedItems.forEach(item => {
+    console.log(`  ${item.name}: qty=${item.count}, pricePerUnit=${item.pricePerUnit}, total=${item.pricePerUnit * Math.abs(item.count)}`);
+  });
+  console.log('Return total calculated:', returnTotal);
+  console.log('Return total rounded:', Math.round(returnTotal));
+  
+  const confirmMsg = `Return ${returnedItems.length} item(s) for ${Math.round(returnTotal)}元?`;
+  
+  if (!confirm(confirmMsg)) {
     return;
   }
   
@@ -407,33 +447,22 @@ async function saveReturn() {
   btn.disabled = true;
   btn.innerHTML = '<span>Saving...</span>';
   
-  // Confirm with user
-  const returnTotal = returnedItems.reduce((sum, item) => sum + item.price, 0);
-  const confirmMsg = `Return ${returnedItems.length} item(s) for ${Math.abs(Math.round(returnTotal))}元?`;
-  
-  if (!confirm(confirmMsg)) {
-    btn.disabled = false;
-    btn.innerHTML = originalHTML;
-    return;
-  }
-  
   try {
-    // Build data object for API
-    const data = { 
-      time: currentTransaction.originalTime.toISOString()
-    };
+    // Build data object for API - create NEW transaction with negative quantities
+    const data = {};
     
     returnedItems.forEach(item => {
-      data[item.item_id] = item.qty; // negative quantity
+      data[item.item_id] = item.count; // negative quantity
     });
     
-    console.log('Sending return data to API:', data);
+    console.log('Data object being sent to API:', data);
+    console.log('Data as JSON string:', JSON.stringify(data));
     
-    // Send to API using FormData
+    // Send to API using FormData - use new_transaction endpoint
     const formData = new FormData();
     formData.append('data', JSON.stringify(data));
     
-    const response = await fetch(`${API_BASE_URL}/db/transaction_page/update_transaction`, {
+    const response = await fetch(`${API_BASE_URL}/db/transaction_page/new_transaction`, {
       method: 'POST',
       credentials: 'include',
       body: formData
@@ -443,22 +472,28 @@ async function saveReturn() {
       throw new Error(`HTTP error: ${response.status}`);
     }
     
-    const result = await response.text();
-    console.log('Return saved successfully:', result);
+    const result = await response.json();
+    console.log('API response - Return transaction created:', result);
+    
+    // Exit return mode
+    isReturnMode = false;
+    returnQuantities = {};
     
     // Refresh transactions from server
+    await fetchItemList();
     const transactions = await fetchTransactionHistory();
+    console.log('Fresh transactions from server:', transactions);
     processTransactionData(transactions);
     loadTransactions();
-    isReturnMode = false;
     
+    // Show success message after UI is updated
     alert('Return saved successfully!');
     
   } catch (error) {
     console.error('Error saving return:', error);
     alert('Failed to save return: ' + error.message);
     
-    // Restore button
+    // Restore button state on error
     btn.disabled = false;
     btn.innerHTML = originalHTML;
   }
@@ -466,9 +501,11 @@ async function saveReturn() {
 
 // Increment quantity
 function incrementQty(name, maxQty) {
-  if (returnQuantities[name] < maxQty) {
-    returnQuantities[name]++;
-    const qtyElement = document.getElementById(`qty-${name.replace(/\s/g, '-')}`);
+  const currentQty = returnQuantities[name] || 0;
+  if (currentQty < maxQty) {
+    returnQuantities[name] = currentQty + 1;
+    const sanitizedName = name.replace(/[^a-zA-Z0-9]/g, '-');
+    const qtyElement = document.getElementById(`qty-${sanitizedName}`);
     if (qtyElement) {
       qtyElement.textContent = returnQuantities[name];
     }
@@ -479,9 +516,11 @@ function incrementQty(name, maxQty) {
 
 // Decrement quantity
 function decrementQty(name) {
-  if (returnQuantities[name] > 0) {
-    returnQuantities[name]--;
-    const qtyElement = document.getElementById(`qty-${name.replace(/\s/g, '-')}`);
+  const currentQty = returnQuantities[name] || 0;
+  if (currentQty > 0) {
+    returnQuantities[name] = currentQty - 1;
+    const sanitizedName = name.replace(/[^a-zA-Z0-9]/g, '-');
+    const qtyElement = document.getElementById(`qty-${sanitizedName}`);
     if (qtyElement) {
       qtyElement.textContent = returnQuantities[name];
     }
@@ -493,9 +532,9 @@ function decrementQty(name) {
 // Update individual item price
 function updateItemPrice(name) {
   const item = currentTransaction.items.find(i => i.name === name);
-  const pricePerUnit = item.price / item.qty;
-  const newPrice = Math.round(pricePerUnit * returnQuantities[name]);
-  const priceElement = document.getElementById(`price-${name.replace(/\s/g, '-')}`);
+  const newPrice = Math.round(item.pricePerUnit * (returnQuantities[name] || 0));
+  const sanitizedName = name.replace(/[^a-zA-Z0-9]/g, '-');
+  const priceElement = document.getElementById(`price-${sanitizedName}`);
   if (priceElement) {
     priceElement.textContent = `${newPrice}元`;
   }
@@ -505,8 +544,7 @@ function updateItemPrice(name) {
 function updateReturnTotal() {
   let total = 0;
   currentTransaction.items.forEach(item => {
-    const pricePerUnit = item.price / item.qty;
-    total += pricePerUnit * returnQuantities[item.name];
+    total += item.pricePerUnit * (returnQuantities[item.name] || 0);
   });
   const mainTotal = document.getElementById('mainTotal');
   if (mainTotal) {
@@ -529,6 +567,21 @@ function selectCategory(activeBtn) {
   activeImg.src = `/src/assets/${activeIconName}-active.svg`;
 }
 
+// Show error
+function showError(message, isLoginError) {
+  const container = document.getElementById('transactionList');
+  if (container) {
+    if (isLoginError) {
+      container.innerHTML = '<p class="text-red-500 text-center py-4">Session expired. Please log in again.</p>';
+      setTimeout(() => {
+        window.location.href = '../login/login.html';
+      }, 2000);
+    } else {
+      container.innerHTML = `<p class="text-red-500 text-center py-4">Error: ${message}</p>`;
+    }
+  }
+}
+
 // Initialize app
 async function initializeApp() {
   console.log('Initializing History Page (5 Most Recent Transactions)...');
@@ -536,7 +589,7 @@ async function initializeApp() {
   // Show loading
   const container = document.getElementById('transactionList');
   if (container) {
-    container.innerHTML = '<p class="text-gray-400 text-center py-4">Loading 5 most recent transactions...</p>';
+    container.innerHTML = '<p class="text-gray-400 text-center py-4">Loading transactions...</p>';
   }
   
   // Highlight history icon
@@ -547,10 +600,10 @@ async function initializeApp() {
   
   // Fetch data
   try {
-    // Fetch items first
+    // Fetch items first (for item names if needed)
     await fetchItemList();
     
-    // Fetch transactions
+    // Fetch transactions with prices (5 most recent)
     const transactions = await fetchTransactionHistory();
     
     // Process the data
@@ -577,26 +630,3 @@ if (document.readyState === 'loading') {
 } else {
   initializeApp();
 }
-
-// CATEGORY SELECTION
-function selectCategory(activeBtn) {
-  const buttons = document.querySelectorAll("[data-icon]");
-
-  buttons.forEach((btn) => {
-    const icon = btn.querySelector("img");
-    const iconName = btn.dataset.icon;
-    icon.src = `/src/assets/${iconName}.svg`;
-  });
-
-  const activeIconName = activeBtn.dataset.icon;
-  const activeImg = activeBtn.querySelector("img");
-  activeImg.src = `/src/assets/${activeIconName}-active.svg`;
-}
-
-window.addEventListener("load", async () => {
-  const stockCategory = document.querySelector('[data-icon="history"]');
-  if (stockCategory) {
-    selectCategory(stockCategory);
-  }
-  await fetchItemList();
-});
