@@ -151,21 +151,29 @@
           />
         </div>
 
-        <div data-icon="history" onclick="selectCategory(this)">
+        <a
+          href="history.html"
+          data-icon="history"
+          onclick="selectCategory(this)"
+        >
           <img
             src="/src/assets/history.svg"
             class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
-            alt=""
+            alt="History"
           />
-        </div>
+        </a>
 
-        <div data-icon="summary" onclick="selectCategory(this)">
+        <a
+          href="summary.html"
+          data-icon="summary"
+          onclick="selectCategory(this)"
+        >
           <img
             src="/src/assets/summary.svg"
             class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
-            alt=""
+            alt="Summary"
           />
-        </div>
+        </a>
       </div>
 
       <form action="/logout" method="POST">

@@ -32,7 +32,32 @@ const saveButton = document.getElementById("saveButton");
 const grid = document.getElementById("itemGrid");
 const searchInput = document.getElementById("searchInput");
 
-// FETCH
+// CHECK IF USER IS LOGGED IN
+async function checkLoginStatus() {
+  try {
+    const res = await fetch("http://localhost:3000/db/admin/WhoAmI", {
+      credentials: "include",
+    });
+
+    if (res.status !== 200) {
+      alert("You are not logged in! Redirecting to login page...");
+      window.location.href = "/views/login/login.html";
+      return false;
+    }
+
+    const companyName = await res.text();
+    console.log("Logged in as:", companyName);
+    return true;
+  } catch (error) {
+    console.error("Login check failed:", error);
+    alert(
+      "Cannot connect to server. Please make sure the server is running on port 3000."
+    );
+    return false;
+  }
+}
+
+// FETCH ITEMS FROM DATABASE
 async function fetchItemList() {
   try {
     const res = await fetch(
@@ -47,7 +72,7 @@ async function fetchItemList() {
 
     if (res.status === 200) {
       const data = await res.json();
-      console.log("Fetched items:", data);
+      console.log("Fetched items from database:", data);
 
       items = data.map((item) => ({
         id: item.id,
@@ -67,57 +92,91 @@ async function fetchItemList() {
         selectItem(0);
       }
     } else {
-      console.error("Failed to fetch items");
+      const errorText = await res.text();
+      console.error("Failed to fetch items:", errorText);
+
+      if (errorText.includes("company_id is null")) {
+        alert("Session expired! Please login again.");
+        window.location.href = "/views/login/login.html";
+      }
     }
   } catch (error) {
     console.error("Fetch error:", error);
+    alert("Cannot connect to database server.");
   }
 }
 
-// ADD NEW ITEM TO API
+// ADD NEW ITEM TO DATABASE
 async function addItemToAPI(formData) {
   try {
+    console.log("Sending item to database...");
+
     const res = await fetch("http://localhost:3000/db/stock_page/new_item", {
       method: "POST",
       credentials: "include",
       body: formData,
     });
 
+    console.log("Response status:", res.status);
+
     if (res.status === 200) {
-      const result = await res.json();
-      console.log("Item added successfully:", result);
+      const result = await res.text();
+      console.log("Item added to database successfully! Item ID:", result);
       return true;
     } else {
       const errorText = await res.text();
-      console.error("Failed to add item:", errorText);
+      console.error("Database error:", errorText);
+
+      if (
+        errorText.includes("company_id is null") ||
+        errorText === "err from sql"
+      ) {
+        alert("Session expired! Please login again.");
+        window.location.href = "/views/login/login.html";
+      } else {
+        alert("Failed to add item to database: " + errorText);
+      }
       return false;
     }
   } catch (error) {
-    console.error("Add item error:", error);
+    console.error("Network error:", error);
+    alert(
+      "Cannot connect to server. Please check if the server is running on port 3000."
+    );
     return false;
   }
 }
 
-// UPDATE ITEM
+// UPDATE ITEM IN DATABASE
 async function updateItemInAPI(formData) {
   try {
+    console.log("Updating item in database...");
+
     const res = await fetch("http://localhost:3000/db/stock_page/update_item", {
       method: "POST",
       credentials: "include",
-      body: formData, // FormData handles multipart/form-data automatically
+      body: formData,
     });
 
     if (res.status === 200) {
-      const result = await res.json();
-      console.log("Item updated successfully:", result);
+      const result = await res.text();
+      console.log("Item updated in database successfully! Item ID:", result);
       return true;
     } else {
       const errorText = await res.text();
       console.error("Failed to update item:", errorText);
+
+      if (errorText.includes("company_id is null")) {
+        alert("Session expired! Please login again.");
+        window.location.href = "/views/login/login.html";
+      } else {
+        alert("Failed to update item: " + errorText);
+      }
       return false;
     }
   } catch (error) {
-    console.error("Update item error:", error);
+    console.error("Update error:", error);
+    alert("Cannot connect to server.");
     return false;
   }
 }
@@ -152,35 +211,57 @@ popupImageUpload.addEventListener("change", () => {
   }
 });
 
-// ADD NEW ITEM
+// ADD NEW ITEM TO DATABASE
 popupSaveBtn.addEventListener("click", async () => {
-  if (
-    !popupNameInput.value ||
-    !popupPriceInput.value ||
-    !popupImageUpload.files[0]
-  ) {
-    alert("Please fill all fields and upload an image");
+  // Validation
+  if (!popupNameInput.value.trim()) {
+    alert("Please enter item name");
+    popupNameInput.focus();
     return;
   }
 
-  // Create FormData
-  const formData = new FormData();
-  formData.append("name", popupNameInput.value);
-  formData.append("type", "Food"); // Default type, you can add a dropdown for this
-  formData.append("stock", parseInt(popupStockInput.value) || 1);
-  formData.append("price", parseInt(popupPriceInput.value));
-  formData.append("icon", popupImageUpload.files[0]); // The actual file
+  if (!popupPriceInput.value || popupPriceInput.value <= 0) {
+    alert("Please enter a valid price");
+    popupPriceInput.focus();
+    return;
+  }
 
+  if (!popupStockInput.value || popupStockInput.value < 0) {
+    alert("Please enter a valid stock amount");
+    popupStockInput.focus();
+    return;
+  }
+
+  if (!popupImageUpload.files[0]) {
+    alert("Please upload an image");
+    return;
+  }
+
+  // Create FormData for database
+  const formData = new FormData();
+  formData.append("name", popupNameInput.value.trim());
+  formData.append("type", "Food"); // Required by database
+  formData.append("stock", parseInt(popupStockInput.value) || 0);
+  formData.append("price", parseInt(popupPriceInput.value));
+  formData.append("icon", popupImageUpload.files[0]);
+
+  // Log what we're sending to database
+  console.log("Sending to database:");
+  console.log("  - Name:", popupNameInput.value.trim());
+  console.log("  - Type:", "Food");
+  console.log("  - Stock:", parseInt(popupStockInput.value));
+  console.log("  - Price:", parseInt(popupPriceInput.value));
+  console.log("  - Image:", popupImageUpload.files[0].name);
+
+  // Send to database via backend API
   const success = await addItemToAPI(formData);
 
   if (success) {
-    // Refresh the item list from server
+    // Refresh from database
     await fetchItemList();
-    alert("Item added successfully!");
+    alert("Item added successfully to database!");
     clearPopupInputs();
     closePopup();
-  } else {
-    alert("Failed to add item. Please try again.");
   }
 });
 
@@ -260,7 +341,7 @@ function selectItem(index) {
   renderItems();
 }
 
-// SAVE EDITED ITEM
+// SAVE EDITED ITEM TO DATABASE
 saveButton.addEventListener("click", async () => {
   if (selectedItemIndex === null) {
     alert("No item selected");
@@ -274,14 +355,18 @@ saveButton.addEventListener("click", async () => {
 
   const item = items[selectedItemIndex];
 
+  // Create FormData for database update
   const formData = new FormData();
   formData.append("item_id", item.id);
+
   if (editNameInput.value !== item.name) {
     formData.append("name", editNameInput.value);
   }
+
   if (item.type) {
     formData.append("type", item.type);
   }
+
   if (editImageUpload.files.length > 0) {
     formData.append("icon", editImageUpload.files[0]);
   }
@@ -289,20 +374,21 @@ saveButton.addEventListener("click", async () => {
   formData.append("stock", parseInt(editStockInput.value) || 0);
   formData.append("price", parseInt(editPriceInput.value));
 
+  console.log("Updating item in database...");
+
+  // Send update to database via backend API
   const success = await updateItemInAPI(formData);
 
   if (success) {
-    // Refresh the item 
+    // Refresh from database
     await fetchItemList();
 
-    // Reselect the item at the same position
+    // Reselect the item  
     if (items.length > selectedItemIndex) {
       selectItem(selectedItemIndex);
     }
 
-    alert("Item updated successfully!");
-  } else {
-    alert("Failed to update item. Please try again.");
+    alert("Item updated successfully in database!");
   }
 });
 
@@ -353,10 +439,28 @@ function selectCategory(activeBtn) {
   activeImg.src = `/src/assets/${activeIconName}-active.svg`;
 }
 
+// INITIALIZE - CHECK LOGIN AND LOAD DATA FROM DATABASE
 window.addEventListener("load", async () => {
+  console.log("Initializing application...");
+
+  // Check if user is logged in first
+  const isLoggedIn = await checkLoginStatus();
+
+  if (!isLoggedIn) {
+    console.log("Not logged in, stopping initialization");
+    return;
+  }
+
+  console.log("User is logged in");
+
+  // Set active category
   const stockCategory = document.querySelector('[data-icon="stock"]');
   if (stockCategory) {
     selectCategory(stockCategory);
   }
+
+  // Load items from database
+  console.log("Loading items from database...");
   await fetchItemList();
+  console.log("Application ready!");
 });
