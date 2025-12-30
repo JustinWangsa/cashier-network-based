@@ -26,9 +26,44 @@
         <p class="font-['Aclonica']">ASEP'S POS</p>
       </div>
 
+      <div class="flex flex-1 justify-center gap-20">
+        <div data-icon="stock" onclick="selectCategory(this)">
+          <img
+            src="/src/assets/stock.svg"
+            class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
+            alt=""
+          />
+        </div>
+
+        <a
+          href="history.html"
+          data-icon="history"
+          onclick="selectCategory(this)"
+        >
+          <img
+            src="/src/assets/history.svg"
+            class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
+            alt="History"
+          />
+        </a>
+
+        <a
+          href="summary.html"
+          data-icon="summary"
+          onclick="selectCategory(this)"
+        >
+          <img
+            src="/src/assets/summary.svg"
+            class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
+            alt="Summary"
+          />
+        </a>
+      </div>
+
       <form action="/logout" method="POST">
         <button
-          class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
+          class="bg-[#CDF7E5] text-[#1A955F] font-['inter'] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
+          type="submit"
         >
           Logout
         </button>
@@ -46,7 +81,7 @@
             <img src="/src/assets/sale.svg" class="w-10 h-10 shrink-0" />
             <div>
               <p class="text-sm text-gray-500">Total Revenue</p>
-              <p class="text-2xl font-bold">$215,860</p>
+              <p class="text-2xl font-bold"></p>
             </div>
           </div>
         </div>
@@ -78,7 +113,6 @@
         </div>
 
         <!-- Total Sale -->
-        <!-- Total Sale -->
         <div
           class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col gap-4"
         >
@@ -108,7 +142,7 @@
           class="lg:col-span-1 bg-white rounded-2xl p-6 shadow-[0_6px_20px_rgba(0,0,0,0.08)]"
         >
           <h2 class="font-bold text-lg mb-4">Best Selling Food</h2>
-          <div class="h-72 flex items-center justify-center text-gray-400">
+          <div class="h-72 flex items-start justify-start text-gray-400">
             <!--Donut chart-->
           </div>
         </div>

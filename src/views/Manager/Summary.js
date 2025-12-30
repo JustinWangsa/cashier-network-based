@@ -19,10 +19,12 @@ async function fetchTransactionData() {
 
     if (res.status === 200) {
       const data = await res.json();
-      console.log("Transaction data:", data);
+      console.log("Transaction data received:", data);
       return data;
     } else {
-      console.error("Failed to fetch transaction data");
+      console.error("Failed to fetch transaction data, status:", res.status);
+      const text = await res.text();
+      console.error("Response:", text);
       return [];
     }
   } catch (error) {
@@ -46,10 +48,12 @@ async function fetchItemList() {
 
     if (res.status === 200) {
       const data = await res.json();
-      console.log("Item list:", data);
+      console.log("Item list received:", data);
       return data;
     } else {
-      console.error("Failed to fetch item list");
+      console.error("Failed to fetch item list, status:", res.status);
+      const text = await res.text();
+      console.error("Response:", text);
       return [];
     }
   } catch (error) {
@@ -168,11 +172,13 @@ function calculateBestSellingByCategory(transactions, itemList) {
     categoryMap[type] += transaction.count;
   });
 
-  // Convert to array
-  const categories = Object.entries(categoryMap).map(([name, count]) => ({
-    name,
-    count,
-  }));
+  // Convert to array and sort by count descending
+  const categories = Object.entries(categoryMap)
+    .map(([name, count]) => ({
+      name,
+      count,
+    }))
+    .sort((a, b) => b.count - a.count);
 
   return categories;
 }
@@ -226,10 +232,6 @@ function createSalesChart(chartData) {
     existingSummary.remove();
   }
   container.innerHTML = "";
-
-  // Calculate totals for summary text
-  const totalRevenue = chartData.revenue.reduce((a, b) => a + b, 0);
-  const totalSales = chartData.sales.reduce((a, b) => a + b, 0);
 
   // Create canvas for chart
   const canvas = document.createElement("canvas");
@@ -486,34 +488,59 @@ function createBestSellingChart(categoryData) {
   console.log("Best selling chart created successfully");
 }
 
+// Show loading state
+function showLoading() {
+  const containers = document.querySelectorAll('.h-72');
+  containers.forEach(container => {
+    container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">Loading data...</div>';
+  });
+}
+
+// Show error state
+function showError(message) {
+  const containers = document.querySelectorAll('.h-72');
+  containers.forEach(container => {
+    container.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #f44336; text-align: center; padding: 20px;">${message}</div>`;
+  });
+}
+
 // Initialize dashboard
 async function initializeDashboard() {
   try {
     console.log("Loading dashboard data...");
+    showLoading();
 
     const transactions = await fetchTransactionData();
     const itemList = await fetchItemList();
 
     if (transactions.length === 0) {
       console.warn("No transaction data available");
+      showError("No transaction data available.<br>Create some transactions to see statistics.");
       return;
     }
 
+    console.log(`Processing ${transactions.length} transactions and ${itemList.length} items`);
+
     // Calculate statistics
     const stats = calculateStatistics(transactions);
+    console.log("Statistics calculated:", stats);
     updateStatisticsBoxes(stats);
 
     // Prepare chart data
     const salesData = groupTransactionsByMonth(transactions);
+    console.log("Sales data by month:", salesData);
+    
     const categoryData = calculateBestSellingByCategory(transactions, itemList);
+    console.log("Category data:", categoryData);
 
     // Create charts
     createSalesChart(salesData);
     createBestSellingChart(categoryData);
 
-    console.log("Dashboard loaded successfully");
+    console.log("✅ Dashboard loaded successfully");
   } catch (error) {
-    console.error("Error initializing dashboard:", error);
+    console.error("❌ Error initializing dashboard:", error);
+    showError("Failed to load dashboard data.<br>Please check console for details.");
   }
 }
 
@@ -542,12 +569,40 @@ function loadChartJS() {
   });
 }
 
+// Category selection function with navigation
+function selectCategory(activeBtn) {
+  const iconName = activeBtn.dataset.icon;
+  
+  // Define page URLs
+  const pageUrls = {
+    stock: 'main.html',
+    history: 'history.html',
+    summary: 'summary.html'
+  };
+  
+  // Navigate to the corresponding page
+  if (pageUrls[iconName]) {
+    window.location.href = pageUrls[iconName];
+  }
+}
+
+// Make selectCategory available globally
+window.selectCategory = selectCategory;
+
 // Initialize when page loads
 window.addEventListener("load", async () => {
+  // Highlight the active summary icon
+  const summaryCategory = document.querySelector('[data-icon="summary"]');
+  if (summaryCategory) {
+    const activeImg = summaryCategory.querySelector("img");
+    activeImg.src = `/src/assets/summary-active.svg`;
+  }
+
   try {
     await loadChartJS();
     await initializeDashboard();
   } catch (error) {
     console.error("Failed to initialize dashboard:", error);
+    showError("Failed to initialize dashboard.<br>Please refresh the page.");
   }
 });
