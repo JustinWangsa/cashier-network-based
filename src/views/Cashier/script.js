@@ -1,34 +1,37 @@
 //add cart function//
 const cart = {};
 
-function addToCart(name, price, image) {
-  if (cart[name]) {
-    cart[name].qty++;
+function addToCart(id, name, price, image) {
+  if (cart[id]) {
+    cart[id].qty++;
   } else {
-    cart[name] = { price, qty: 1, image };
+    cart[id] = { id, name, price, qty: 1, image };
   }
   renderCart();
 }
 
 function addToCartFromItem(itemEl) {
-  const name = itemEl.dataset.name;
-  const price = Number(itemEl.dataset.price);
-  const image = itemEl.dataset.image;
-
-  addToCart(name, price, image);
+  addToCart(
+    itemEl.dataset.id,
+    itemEl.dataset.name,
+    Number(itemEl.dataset.price),
+    itemEl.dataset.image
+  );
 }
 
-function changeQty(name, delta) {
-  cart[name].qty += delta;
+function changeQty(id, delta) {
+  if (!cart[id]) return;
 
-  if (cart[name].qty <= 0) {
-    delete cart[name];
-  }
+  const nextQty = cart[id].qty + delta;
+
+  if (nextQty < 1) return;
+
+  cart[id].qty = nextQty;
   renderCart();
 }
 
-function removeItem(name) {
-  delete cart[name];
+function removeItem(id) {
+  delete cart[id];
   renderCart();
 }
 
@@ -39,7 +42,7 @@ function renderCart() {
   cartItems.innerHTML = "";
   let total = 0;
 
-  Object.entries(cart).forEach(([name, item]) => {
+  Object.entries(cart).forEach(([id, item]) => {
     total += item.price * item.qty;
 
     cartItems.innerHTML += `
@@ -49,18 +52,18 @@ function renderCart() {
           <img
             src="/src/assets/Vector.svg"
             class="w-5 h-5 cursor-pointer"
-            onclick="removeItem('${name}')"
+            onclick="removeItem('${id}')"
             title="Remove item"
           />
-          <p class="text-base font-semibold">${name}</p>
+          <p class="text-base font-semibold">${item.name}</p>
         </div>
 
         <div class="flex items-center gap-3 flex-1 justify-center">
-          <button onclick="changeQty('${name}', -1)">
+          <button onclick="changeQty('${id}', -1)">
             <img src="/src/assets/Subtract.svg" class="w-8 h-9" />
           </button>
           <span class="text-base font-semibold">${item.qty}</span>
-          <button onclick="changeQty('${name}', 1)">
+          <button onclick="changeQty('${id}', 1)">
             <img src="/src/assets/Add.svg" class="w-10 h-8" />
           </button>
         </div>
@@ -87,6 +90,7 @@ searchInput.addEventListener("input", () => {
     item.style.display = name.includes(keyword) ? "" : "none";
   });
 });
+
 //category selection function/
 function selectCategory(activeBtn) {
   const buttons = document.querySelectorAll(".category-btn");
@@ -116,42 +120,6 @@ function selectCategory(activeBtn) {
   ).src = `/src/assets/${activeIcon}-active.svg`;
 }
 
-// async function fetchItemList() {
-//   await fetch("http://localhost:3000/db/stock_page/fetch_item_list")
-//     .then((res) => {
-//       if (!res.ok) throw new Error("Failed to fetch items");
-//       return res.json();
-//     })
-//     .then((items) => {
-//       const grid = document.getElementById("itemGrid");
-//       grid.innerHTML = "";
-
-//       items.forEach((item) => {
-//         const div = document.createElement("div");
-//         div.className = "rounded-md text-center cursor-pointer";
-
-//         div.dataset.name = item.name;
-//         div.dataset.price = item.price;
-//         div.dataset.image = item.image;
-
-//         div.addEventListener("click", () => addToCartFromItem(div));
-
-//         div.innerHTML = `
-//           <img src="${item.image}" class="object-cover aspect-square rounded-md" />
-//           <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">
-//             ${item.name}
-//           </p>
-//           <p class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base">
-//             NT$${item.price}
-//           </p>
-//         `;
-
-//         grid.appendChild(div);
-//       });
-//     })
-//     .catch((err) => console.error("Fetch error:", err));
-// }
-
 async function fetchItemList() {
   try {
     const res = await fetch(
@@ -168,19 +136,19 @@ async function fetchItemList() {
       const data = await res.json();
       console.log(data);
 
-      // Get the grid container
+
       const grid = document.getElementById("itemGrid");
       grid.innerHTML = "";
 
-      // Loop through each item and create elements
+
       data.forEach((item) => {
         const div = document.createElement("div");
         div.className = "rounded-md text-center cursor-pointer";
 
+        div.dataset.id = item.id;
         div.dataset.name = item.name;
         div.dataset.price = item.price;
-        div.dataset.image = item.image || "/src/assets/placeholder.jpg"; // fallback image
-
+        div.dataset.image = item.image || "/src/assets/placeholder.jpg";
         div.addEventListener("click", () => addToCartFromItem(div));
 
         div.innerHTML = `
@@ -212,3 +180,50 @@ window.addEventListener("load", () => {
     selectCategory(allCategory);
   }
 });
+
+async function submitPayment() {
+  if (Object.keys(cart).length === 0) {
+    alert("Cart is empty");
+    return;
+  }
+
+  // Build data object
+  const data = {};
+  Object.values(cart).forEach(item => {
+    data[item.id] = item.qty;
+  });
+
+  try {
+    const res = await fetch(
+      "http://localhost:3000/db/transaction_page/new_transaction",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // send cookies for session
+        body: JSON.stringify({ data }) // send as plain object
+      }
+    );
+
+    // Log response text if failed
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("Transaction failed:", text);
+      throw new Error("Transaction failed");
+    }
+
+    // Parse JSON response
+    const result = await res.json();
+    console.log("Transaction saved:", result);
+
+    // Clear cart
+    Object.keys(cart).forEach(key => delete cart[key]);
+    renderCart();
+
+    alert("Payment successful");
+  } catch (err) {
+    console.error(err);
+    alert("Payment failed");
+  }
+}
