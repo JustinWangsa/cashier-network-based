@@ -47,15 +47,12 @@ function addToCartFromItem(itemEl) {
     moveItemToEndOnce(itemEl);
   }
   moveItemToEnd(itemEl);
-
 }
 
 function changeQty(id, delta) {
   if (!cart[id]) return;
 
-  const itemEl = document.querySelector(
-    `[data-id="${id}"]`
-  );
+  const itemEl = document.querySelector(`[data-id="${id}"]`);
 
   let stock = Number(itemEl.dataset.stock);
   const nextQty = cart[id].qty + delta;
@@ -87,9 +84,7 @@ function removeItem(id) {
   const item = cart[id];
   if (!item) return;
 
-  const itemEl = document.querySelector(
-    `[data-id="${id}"]`
-  );
+  const itemEl = document.querySelector(`[data-id="${id}"]`);
 
   let stock = Number(itemEl.dataset.stock);
   stock += item.qty;
@@ -108,7 +103,7 @@ function renderCart() {
   cartItems.innerHTML = "";
   let total = 0;
 
-  Object.values(cart).forEach(item => {
+  Object.values(cart).forEach((item) => {
     total += item.price * item.qty;
 
     cartItems.innerHTML += `
@@ -148,15 +143,18 @@ const searchInput = document.getElementById("searchInput");
 
 searchInput.addEventListener("input", () => {
   const keyword = searchInput.value.toLowerCase();
-  document.querySelectorAll("#itemGrid > div").forEach(item => {
+  document.querySelectorAll("#itemGrid > div").forEach((item) => {
     const name = item.querySelector("p").textContent.toLowerCase();
     item.style.display = name.includes(keyword) ? "" : "none";
   });
 });
 
-//category 
+// Global variable to track current category filter
+let currentCategory = "All";
+
+//category
 function selectCategory(activeBtn) {
-  document.querySelectorAll(".category-btn").forEach(btn => {
+  document.querySelectorAll(".category-btn").forEach((btn) => {
     btn.classList.remove("border-[#27DD8E]");
     btn.classList.add("border-[#C0C0C0]");
 
@@ -176,8 +174,28 @@ function selectCategory(activeBtn) {
   activeText.classList.add("text-[#105E3C]");
 
   const activeIcon = activeBtn.dataset.icon;
-  activeBtn.querySelector(".category-icon").src =
-    `/src/assets/${activeIcon}-active.svg`;
+  activeBtn.querySelector(
+    ".category-icon"
+  ).src = `/src/assets/${activeIcon}-active.svg`;
+
+  // Store the selected category and filter items
+  currentCategory = activeIcon;
+  filterItemsByCategory(currentCategory);
+}
+
+// Filter items by category
+function filterItemsByCategory(category) {
+  document.querySelectorAll("#itemGrid > div").forEach((item) => {
+    const itemCategory = item.dataset.type || "Others";
+
+    if (category === "All") {
+      item.style.display = "";
+    } else if (itemCategory === category) {
+      item.style.display = "";
+    } else {
+      item.style.display = "none";
+    }
+  });
 }
 
 // fetch item
@@ -194,17 +212,18 @@ async function fetchItemList() {
     }
 
     const data = await res.json();
+    const activeItems = data.filter((item) => item.expiry === null);
     const grid = document.getElementById("itemGrid");
     grid.innerHTML = "";
 
-    data.forEach(item => {
+    activeItems.forEach((item) => {
       const div = document.createElement("div");
       div.className =
         "bg-white rounded-xl p-3 flex flex-col items-center gap-2 cursor-pointer shadow-sm hover:shadow-md transition";
 
-
       div.dataset.id = item.id;
       div.dataset.name = item.name;
+      div.dataset.type = item.type || "Others"; // Store category
       div.dataset.price = item.price;
       div.dataset.stock = item.currentStock ?? 0;
 
@@ -213,8 +232,6 @@ async function fetchItemList() {
         : "/src/assets/placeholder.jpg";
 
       div.addEventListener("click", () => addToCartFromItem(div));
-      
-      div.dataset.stock = item.currentStock ?? 0;
 
       div.innerHTML = `
         <img 
@@ -229,6 +246,9 @@ async function fetchItemList() {
       `;
       grid.appendChild(div);
     });
+
+    // Apply current category filter after loading items
+    filterItemsByCategory(currentCategory);
   } catch (error) {
     console.error("Fetch error:", error);
     alert("Cannot connect to database server.");
@@ -252,7 +272,7 @@ payButton.addEventListener("click", async () => {
 
   // build backend payload
   const dataObj = {};
-  Object.values(cart).forEach(item => {
+  Object.values(cart).forEach((item) => {
     dataObj[item.id] = String(item.qty);
   });
 
@@ -265,7 +285,7 @@ payButton.addEventListener("click", async () => {
       {
         method: "POST",
         credentials: "include",
-        body: formData
+        body: formData,
       }
     );
 
@@ -292,7 +312,6 @@ payButton.addEventListener("click", async () => {
     }
 
     alert("Payment failed: " + text);
-
   } catch (err) {
     console.error("Network error:", err);
     alert("Cannot connect to server. Please check if the server is running.");

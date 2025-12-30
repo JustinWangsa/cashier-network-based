@@ -42,7 +42,7 @@
           placeholder="."
         />
 
-        <div class="flex gap-6">
+        <div class="flex gap-6 items-center">
           <!-- LEFT IMAGE -->
           <div class="flex flex-col items-center gap-3">
             <button
@@ -81,6 +81,24 @@
                 class="w-full p-3 rounded-md bg-white"
               />
             </div>
+
+            <div class="pr-4 pl-4">
+              <h2
+                class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273] font-['inter']"
+              >
+                Category
+              </h2>
+              <select
+                id="popupCategorySelect"
+                class="w-full p-3 rounded-md bg-white border border-gray-300 focus:outline-none font-['inter']"
+              >
+                <option value="Food">Food</option>
+                <option value="Beverage">Beverage</option>
+                <option value="Snacks">Snacks</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+
             <div class="pr-4 pl-4">
               <h2
                 class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273] font-['inter']"
@@ -178,8 +196,8 @@
 
       <form action="/logout" method="POST">
         <button
-          class="bg-[#CDF7E5] text-[#1A955F] font-['inter'] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
-          type="submit"
+          id="logoutBtn"
+          class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
         >
           Logout
         </button>
@@ -193,7 +211,7 @@
       <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 flex-1 min-w-0">
         <!-- ITEMS BOX -->
         <div
-          class="w-88 sm:w-auto flex flex-col gap-4 md:gap-8 lg:gap-12 flex-5 bg-white p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 rounded-xl shadow-xl/20 overflow-y-auto"
+          class="w-88 sm:w-auto flex flex-col gap-4 md:gap-8 flex-5 bg-white p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 rounded-xl shadow-xl/20 overflow-y-auto"
         >
           <div class="flex items-center justify-between mb-4">
             <button
@@ -259,6 +277,25 @@
                 required
                 class="w-full p-3 border border-gray-300 rounded-md focus:outline-none bg-gray-100"
               />
+            </div>
+
+            <div class="pr-4 pl-4 pt-4">
+              <label
+                for="editCategorySelect"
+                class="font-bold text-[35px] md:text-[22px] lg:text-[25px] text-[#36A273] font-['inter'] block mb-2"
+              >
+                Category
+              </label>
+
+              <select
+                id="editCategorySelect"
+                class="w-full p-3 border border-gray-300 rounded-md focus:outline-none bg-gray-100 font-['inter']"
+              >
+                <option value="Food">Food</option>
+                <option value="Beverage">Beverage</option>
+                <option value="Snacks">Snacks</option>
+                <option value="Others">Others</option>
+              </select>
             </div>
 
             <div class="pr-4 pl-4 pt-4">

@@ -61,10 +61,11 @@
       </div>
 
       <form action="/logout" method="POST">
-
+<!-- Replace the existing logout form with this -->
       <button
-        id="logoutBtn"
+        onclick="handleLogout()"
         class="bg-[#CDF7E5] text-[#1A955F] font-['inter'] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
+        type="button"
       >
         Logout
       </button>   
@@ -79,10 +80,10 @@
           class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col gap-4"
         >
           <div class="flex items-center gap-4">
-            <img src="/src/assets/sale.svg" class="w-15 h-15 shrink-0" />
+            <img src="/src/assets/sale.svg" class="w-10 h-10 shrink-0" />
             <div>
-              <p class="text-2xl font-bold p-2">Total Revenue</p>
-              <p class="text-2xl font-bold p-2"></p>
+              <p class="text-sm text-gray-500">Total Revenue</p>
+              <p class="text-2xl font-bold"></p>
             </div>
           </div>
         </div>
@@ -92,10 +93,10 @@
           class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col gap-4"
         >
           <div class="flex items-center gap-4">
-            <img src="/src/assets/order.svg" class="w-15 h-15 shrink-0" />
+            <img src="/src/assets/order.svg" class="w-10 h-10 shrink-0" />
             <div>
-              <p class="text-2xl font-bold p-2">Total Order</p>
-              <p class="text-2xl font-bold p-2"></p>
+              <p class="text-sm text-gray-500">Total Order</p>
+              <p class="text-2xl font-bold">$215,860</p>
             </div>
           </div>
         </div>
@@ -105,10 +106,10 @@
           class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col gap-4"
         >
           <div class="flex items-center gap-4">
-            <img src="/src/assets/Customer.svg" class="w-15 h-15 shrink-0" />
+            <img src="/src/assets/Customer.svg" class="w-10 h-10 shrink-0" />
             <div>
-              <p class="text-2xl font-bold p-2">Total Customer</p>
-              <p class="text-2xl font-bold p-2"></p>
+              <p class="text-sm text-gray-500">Total Customer</p>
+              <p class="text-2xl font-bold">$215,860</p>
             </div>
           </div>
         </div>
@@ -118,22 +119,22 @@
           class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col gap-4"
         >
           <div class="flex items-center gap-4">
-            <img src="/src/assets/chart.svg" class="w-15 h-15 shrink-0" />
+            <img src="/src/assets/chart.svg" class="w-10 h-10 shrink-0" />
             <div>
-              <p class="text-2xl font-bold p-2">Total Sale</p>
-              <p class="text-2xl font-bold p-2">200</p>
+              <p class="text-sm text-gray-500">Total Sale</p>
+              <p class="text-2xl font-bold">$215,860</p>
             </div>
           </div>
         </div>
       </div>
       <!-- BOTTOM ROW : 2 LARGE BOXES -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 h-[55rem]">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- BOX 5 (wide) -->
         <div
           class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-[0_6px_20px_rgba(0,0,0,0.08)]"
         >
-          <h2 class="font-bold text-3xl mb-4">Sales & Revenue</h2>
-          <div class="h-72 flex items-center justify-center text-bold">
+          <h2 class="font-bold text-lg mb-4">Sales & Revenue</h2>
+          <div class="h-72 flex items-center justify-center text-gray-400">
             <!-- Line chart -->
           </div>
         </div>
@@ -142,7 +143,7 @@
         <div
           class="lg:col-span-1 bg-white rounded-2xl p-6 shadow-[0_6px_20px_rgba(0,0,0,0.08)]"
         >
-          <h2 class="font-bold text-3xl mb-4">Best Selling Food</h2>
+          <h2 class="font-bold text-lg mb-4">Best Selling Food</h2>
           <div class="h-72 flex items-start justify-start text-gray-400">
             <!--Donut chart-->
           </div>
