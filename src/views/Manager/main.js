@@ -14,11 +14,13 @@ const imagePreviewBtn = document.getElementById("imagePreviewBtn");
 const popupFileName = document.getElementById("popupFileName");
 
 const popupNameInput = document.getElementById("popupItemName");
+const popupCategorySelect = document.getElementById("popupCategorySelect");
 const popupPriceInput = document.getElementById("popupItemPrice");
 const popupStockInput = document.getElementById("popupStockInput");
 
 // EDIT PANEL ELEMENTS
 const editNameInput = document.getElementById("itemName");
+const editCategorySelect = document.getElementById("editCategorySelect");
 const editPriceInput = document.getElementById("itemPrice");
 const editStockInput = document.getElementById("stockInput");
 const editImageUpload = document.getElementById("imageUpload");
@@ -83,7 +85,7 @@ async function fetchItemList() {
       items = activeItems.map((item) => ({
         id: item.id,
         name: item.name,
-        type: item.type,
+        type: item.type || "Others", // Default to "Others" if no type
         price: item.price,
         stock: item.currentStock || 0,
         imageUrl: item.image
@@ -284,7 +286,7 @@ popupSaveBtn.addEventListener("click", async () => {
   // Create FormData for database
   const formData = new FormData();
   formData.append("name", popupNameInput.value.trim());
-  formData.append("type", "Food"); // Required by database
+  formData.append("type", popupCategorySelect.value); // Use selected category
   formData.append("stock", parseInt(popupStockInput.value) || 0);
   formData.append("price", parseInt(popupPriceInput.value));
   formData.append("icon", popupImageUpload.files[0]);
@@ -292,7 +294,7 @@ popupSaveBtn.addEventListener("click", async () => {
   // Log what we're sending to database
   console.log("Sending to database:");
   console.log("  - Name:", popupNameInput.value.trim());
-  console.log("  - Type:", "Food");
+  console.log("  - Type:", popupCategorySelect.value);
   console.log("  - Stock:", parseInt(popupStockInput.value));
   console.log("  - Price:", parseInt(popupPriceInput.value));
   console.log("  - Image:", popupImageUpload.files[0].name);
@@ -339,34 +341,6 @@ plusStockBtn.addEventListener("click", () => {
   editStockInput.value = currentValue + 1;
 });
 
-// ADD NEW ITEM
-popupSaveBtn.addEventListener("click", () => {
-  if (
-    !popupNameInput.value ||
-    !popupPriceInput.value ||
-    !popupImageUpload.files[0]
-  ) {
-    alert("Please fill all fields and upload an image");
-    return;
-  }
-
-  const newItem = {
-    name: popupNameInput.value,
-    price: parseInt(popupPriceInput.value),
-    stock: parseInt(popupStockInput.value) || 1,
-    imageUrl: URL.createObjectURL(popupImageUpload.files[0]),
-  };
-
-  items.push(newItem);
-  renderItems();
-
-  // Auto-select the newly added item
-  selectItem(items.length - 1);
-
-  clearPopupInputs();
-  closePopup();
-});
-
 // RENDER ITEMS IN GRID
 function renderItems() {
   grid.innerHTML = "";
@@ -374,13 +348,14 @@ function renderItems() {
   items.forEach((item, index) => {
     const itemDiv = document.createElement("div");
     itemDiv.className =
-      "rounded-md text-center cursor-pointer hover:bg-gray-100 p-2 transition";
+      "bg-white rounded-xl p-3 flex flex-col items-center gap-2 cursor-pointer shadow-sm hover:shadow-md transition";
     itemDiv.dataset.index = index;
 
     itemDiv.innerHTML = `
-      <img src="${item.imageUrl}" class="aspect-square object-cover rounded-md" />
+      <img src="${item.imageUrl}" class="w-full h-full object-cover rounded-xl" />
       <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">${item.name}</p>
-      <p class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base">NT${item.price}</p>
+      <p class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base">NT$${item.price}</p>
+      <p class="text-gray-500 text-xs">${item.type}</p>
       <p class="text-gray-600 text-xs">Stock: ${item.stock}</p>
     `;
 
@@ -401,6 +376,7 @@ function selectItem(index) {
   const item = items[index];
 
   editNameInput.value = item.name;
+  editCategorySelect.value = item.type || "Others";
   editPriceInput.value = item.price;
   editStockInput.value = item.stock;
 
@@ -430,25 +406,29 @@ saveButton.addEventListener("click", async () => {
   // Create FormData for database update
   const formData = new FormData();
   formData.append("item_id", item.id);
+  
+  // Always send the name (even if unchanged)
+  formData.append("name", editNameInput.value.trim());
+  
+  // Always send the type/category
+  formData.append("type", editCategorySelect.value);
 
-  if (editNameInput.value !== item.name) {
-    formData.append("name", editNameInput.value);
-  }
-
-  if (item.type) {
-    formData.append("type", item.type);
-  }
-
-  if (editImageUpload.files.length > 0) {
-    items[selectedItemIndex].imageUrl = URL.createObjectURL(
-      editImageUpload.files[0]
-    );
-  }
-
+  // Always send stock and price
   formData.append("stock", parseInt(editStockInput.value) || 0);
   formData.append("price", parseInt(editPriceInput.value));
 
+  // Only send image if a new one was uploaded
+  if (editImageUpload.files.length > 0) {
+    formData.append("icon", editImageUpload.files[0]);
+  }
+
   console.log("Updating item in database...");
+  console.log("  - Item ID:", item.id);
+  console.log("  - Name:", editNameInput.value.trim());
+  console.log("  - Type:", editCategorySelect.value);
+  console.log("  - Stock:", parseInt(editStockInput.value));
+  console.log("  - Price:", parseInt(editPriceInput.value));
+  console.log("  - New image:", editImageUpload.files.length > 0 ? "Yes" : "No");
 
   // Send update to database via backend API
   const success = await updateItemInAPI(formData);
@@ -460,9 +440,13 @@ saveButton.addEventListener("click", async () => {
     // Reselect the item
     if (items.length > selectedItemIndex) {
       selectItem(selectedItemIndex);
+    } else if (items.length > 0) {
+      selectItem(0);
     } else {
       // Clear edit panel
+      selectedItemIndex = null;
       editNameInput.value = "";
+      editCategorySelect.value = "Food";
       editPriceInput.value = "";
       editStockInput.value = "1";
     }
@@ -501,6 +485,7 @@ deleteButton.addEventListener("click", async () => {
     // Clear the edit panel
     selectedItemIndex = null;
     editNameInput.value = "";
+    editCategorySelect.value = "Food";
     editPriceInput.value = "";
     editStockInput.value = "1";
 
@@ -527,6 +512,7 @@ searchInput.addEventListener("input", () => {
 // CLEAR POPUP INPUTS
 function clearPopupInputs() {
   popupNameInput.value = "";
+  popupCategorySelect.value = "Food";
   popupPriceInput.value = "";
   popupStockInput.value = "1";
   popupImageUpload.value = "";
