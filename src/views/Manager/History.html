@@ -4,11 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="../../output.css" rel="stylesheet" />
+    <title>Manager History Page</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Aclonica&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Press+Start+2P&family=Young+Serif&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
-  <body
-    class="bg-[#E0FAEF] m-0 p-0 overflow-hidden gap-6 flex flex-col h-screen"
-  >
+  <body class="bg-[#E0FAEF] m-0 p-0 overflow-hidden flex flex-col h-screen">
     <!-- NAVBAR -->
     <nav
       class="flex items-center justify-between bg-[#137048] shadow-[1px_3px_20px_#181515] px-4 md:px-12 py-3"
@@ -16,169 +23,120 @@
       <div
         class="flex items-center gap-4 md:gap-7 text-[22px] md:text-[30px] font-bold text-white drop-shadow-[2px_2px_8px_#181515]"
       >
-        <img
-          src="/src/assets/Logo.svg"
-          class="w-[35px] md:w-10"
-          alt=""
-        />
-        <p>ASEP'S POS</p>
+        <img src="/src/assets/Logo.svg" class="w-[35px] md:w-10" alt="" />
+        <p class="font-['Aclonica']">ASEP'S POS</p>
       </div>
 
-      <form action="/logout" method="POST">
-        <button
-          class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
-        >
-          Logout
-        </button>
-      </form>
+      <div class="flex flex-1 justify-center gap-20">
+        <div data-icon="stock" onclick="selectCategory(this)">
+          <a href="Main.html">
+            <img
+              src="/src/assets/stock.svg"
+              class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
+              alt=""
+            />
+          </a>
+        </div>
+
+        <div data-icon="history" onclick="selectCategory(this)">
+          <a href="History.html">
+            <img
+              src="/src/assets/history.svg"
+              class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
+              alt=""
+            />
+          </a>
+        </div>
+
+        <div data-icon="summary" onclick="selectCategory(this)">
+          <a href="Summary.html">
+            <img
+              src="/src/assets/summary.svg"
+              class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
+              alt=""
+            />
+          </a>
+        </div>
+      </div>
+
+      <button
+        onclick="handleLogout(event)"
+        class="bg-[#CDF7E5] text-[#1A955F] font-['inter'] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
+        type="button"
+      >
+        Logout
+      </button>
     </nav>
 
-    <div
-      class="flex flex-row gap-3 md:gap-5 lg:gap-8 px-3 md:px-6 lg:px-12 pb-3 md:pb-6 lg:pb-12 flex-1 overflow-hidden"
-    >
-      <div class="flex flex-row gap-8 flex-1 overflow-hidden">
-        <!-- COL 1-->
-        <div class="flex flex-col gap-5 flex-1 min-w-0">
-          <div class="bg-white p-5 rounded-xl shadow-lg flex-1 overflow-hidden flex flex-col">
-            <div class="flex items-center gap-4 mb-4">
-              <!-- DATE -->
-              <button class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <span class="font-semibold text-lg">Tue, 2 Dec</span>
-              <button class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-              <!-- SEARCH BAR -->
-              <div class="ml-auto flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input type="text" placeholder="search items here" class="bg-transparent outline-none text-sm w-48" />
-              </div>
-            </div>
-
-            <!-- TRANSACTION -->
-            <div class="overflow-y-auto flex-1 pr-2.5">
-              <div class="grid grid-cols-3 gap-4 pb-3 border-b text-sm font-semibold text-gray-600 sticky top-0 bg-white z-10">
-                <div>ID</div>
-                <div>Time</div>
-                <div class="text-right">Total</div>
-              </div>
-              
-              <div class="space-y-1 mt-2">
-                <div class="grid grid-cols-3 gap-4 py-3 hover:bg-gray-50 rounded cursor-pointer">
-                  <div class="font-mono text-sm">#B3RT0D1</div>
-                  <div class="text-sm">13:57</div>
-                  <div class="text-right font-semibold">3300元</div>
-                </div>
-                <div class="grid grid-cols-3 gap-4 py-3 bg-gray-100 rounded cursor-pointer">
-                  <div class="font-mono text-sm">#B3RT0DC</div>
-                  <div class="text-sm">13:55</div>
-                  <div class="text-right font-semibold">140元</div>
-                </div>
-                <div class="grid grid-cols-3 gap-4 py-3 hover:bg-gray-50 rounded cursor-pointer">
-                  <div class="font-mono text-sm">#B3RT0DB</div>
-                  <div class="text-sm">13:52</div>
-                  <div class="text-right font-semibold">200元</div>
-                </div>
-                <div class="grid grid-cols-3 gap-4 py-3 hover:bg-gray-50 rounded cursor-pointer">
-                  <div class="font-mono text-sm">#B3RT0DA</div>
-                  <div class="text-sm">13:48</div>
-                  <div class="text-right font-semibold">230元</div>
-                </div>
-                <div class="grid grid-cols-3 gap-4 py-3 hover:bg-gray-50 rounded cursor-pointer">
-                  <div class="font-mono text-sm">#B3RT0D9</div>
-                  <div class="text-sm">13:44</div>
-                  <div class="text-right font-semibold">135元</div>
-                </div>
-                <div class="grid grid-cols-3 gap-4 py-3 hover:bg-gray-50 rounded cursor-pointer">
-                  <div class="font-mono text-sm">#B3RT0D8</div>
-                  <div class="text-sm">13:41</div>
-                  <div class="text-right font-semibold">120元</div>
-                </div>
-                <div class="grid grid-cols-3 gap-4 py-3 hover:bg-gray-50 rounded cursor-pointer">
-                  <div class="font-mono text-sm">#B3RT0D7</div>
-                  <div class="text-sm">13:39</div>
-                  <div class="text-right font-semibold">90元</div>
-                </div>
-                <div class="grid grid-cols-3 gap-4 py-3 hover:bg-gray-50 rounded cursor-pointer">
-                  <div class="font-mono text-sm">#B3RT0D6</div>
-                  <div class="text-sm">13:36</div>
-                  <div class="text-right font-semibold">5000元</div>
-                </div>
-                <div class="grid grid-cols-3 gap-4 py-3 hover:bg-gray-50 rounded cursor-pointer">
-                  <div class="font-mono text-sm">#B3RT0D5</div>
-                  <div class="text-sm">13:34</div>
-                  <div class="text-right font-semibold">235元</div>
-                </div>
-                <div class="grid grid-cols-3 gap-4 py-3 hover:bg-gray-50 rounded cursor-pointer">
-                  <div class="font-mono text-sm">#B3RT0D4</div>
-                  <div class="text-sm">13:31</div>
-                  <div class="text-right font-semibold">300元</div>
-                </div>
-                <div class="grid grid-cols-3 gap-4 py-3 hover:bg-gray-50 rounded cursor-pointer">
-                  <div class="font-mono text-sm">#B3RT0D3</div>
-                  <div class="text-sm">13:28</div>
-                  <div class="text-right font-semibold">100元</div>
-                </div>
-                <div class="grid grid-cols-3 gap-4 py-3 hover:bg-gray-50 rounded cursor-pointer">
-                  <div class="font-mono text-sm">#B3RT0D2</div>
-                  <div class="text-sm">13:25</div>
-                  <div class="text-right font-semibold">1700元</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- COL 2 -->
-        <div class="w-96 flex flex-col gap-5">
-          <div class="bg-white rounded-xl shadow-lg flex-1 overflow-hidden flex flex-col">
-            <div class="p-5 border-b">
-              <h2 class="font-bold text-center text-3xl text-[#105E3C]">Content</h2>
-            </div>
-
-            <!-- Header -->
-            <div class="grid grid-cols-[2fr_1fr_1fr] gap-4 px-5 py-3 bg-gray-100 border-b text-sm font-semibold text-gray-600">
-              <div>Name</div>
-              <div class="text-center">QTY</div>
-              <div class="text-right">Price</div>
-            </div>
-
-            <!-- Items -->
-            <div class="flex-1 overflow-y-auto px-5">
-              <div class="grid grid-cols-[2fr_1fr_1fr] gap-4 py-4 border-b items-center">
-                <div class="text-sm">Bertrand Onlyfans</div>
-                <div class="text-center text-sm">3</div>
-                <div class="text-right text-sm">3000元</div>
-              </div>
-              <div class="grid grid-cols-[2fr_1fr_1fr] gap-4 py-4 border-b items-center">
-                <div class="text-sm">Pacar Cina</div>
-                <div class="text-center text-sm">3</div>
-                <div class="text-right text-sm">300元</div>
-              </div>
-            </div>
-
-            <!-- Summary -->
-            <div class="px-5 py-4 border-t space-y-2">
-              <div class="flex justify-between text-xl font-bold">
-                <span>Total</span>
-                <span>3300元</span>
-              </div>
+    <div class="flex flex-row gap-8 px-12 py-6 flex-1 overflow-hidden">
+      <!-- LEFT COLUMN - Transaction History -->
+      <div class="flex flex-col gap-5 flex-1 min-w-0">
+        <div class="bg-white p-5 rounded-xl shadow-lg flex-1 overflow-hidden flex flex-col">
+          <!-- Header with Title and Search -->
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-800">5 Most Recent Transactions</h2>
+            <div class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input type="text" id="searchInput" placeholder="search transactions" class="bg-transparent outline-none text-sm w-48" oninput="searchTransactions()" />
             </div>
           </div>
 
-          <!-- Return Item Button -->
-          <button class="bg-[#FF4444] hover:bg-[#EE3333] text-white font-bold py-6 rounded-xl shadow-lg transition-all duration-200 text-lg">
-            Return Item
-          </button>
+          <!-- Transaction List -->
+          <div class="overflow-y-auto flex-1">
+            <div class="sticky top-0 bg-white grid grid-cols-4 gap-4 pb-3 border-b text-sm font-semibold text-gray-600 z-10">
+              <div>ID</div>
+              <div>Date</div>
+              <div>Time</div>
+              <div class="text-right">Total</div>
+            </div>
+            
+            <div class="space-y-1 mt-2" id="transactionList">
+              <!-- Transaction items will be generated by JS -->
+            </div>
+          </div>
         </div>
       </div>
+
+      <!-- RIGHT COLUMN - Checkout/Return View -->
+      <div class="w-96 flex flex-col gap-5">
+        <!-- Normal Checkout View -->
+        <div id="checkoutView" class="bg-white rounded-xl shadow-lg flex-1 overflow-hidden flex flex-col">
+          <div class="p-5 border-b border-gray-200">
+            <h2 class="font-bold text-center text-3xl text-[#105E3C]" id="checkoutTitle">Content</h2>
+          </div>
+
+          <!-- Header -->
+          <div class="grid grid-cols-[2fr_1fr_1fr] gap-4 px-5 py-3 bg-gray-100 border-b border-gray-200 text-sm font-semibold text-gray-600">
+            <div>Name</div>
+            <div class="text-center">QTY</div>
+            <div class="text-right">Price</div>
+          </div>
+
+          <!-- Items -->
+          <div class="flex-1 overflow-y-auto px-5" id="itemsList">
+            <!-- Items will be dynamically loaded -->
+          </div>
+
+          <!-- Total at bottom -->
+          <div class="px-5 py-4 border-t border-gray-200">
+            <div class="flex justify-between text-xl font-bold">
+              <span>Total</span>
+              <span id="mainTotal">0元</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button id="actionButton" onclick="toggleReturnView()" class="bg-[#FF4444] hover:bg-[#EE3333] text-white font-bold py-6 rounded-xl shadow-lg transition-all duration-200 text-lg flex items-center justify-center gap-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+          </svg>
+          <span id="buttonText">Return Item</span>
+        </button>
+      </div>
     </div>
+    <script src="History.js"></script>
   </body>
 </html>
