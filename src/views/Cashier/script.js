@@ -1,4 +1,12 @@
-// ================= CART =================
+//move the stock if 0
+function moveItemToEndOnce(itemEl) {
+  if (itemEl.dataset.moved === "true") return;
+
+  itemEl.dataset.moved = "true";
+  document.getElementById("itemGrid").appendChild(itemEl);
+}
+
+//cart
 const cart = {};
 
 function addToCart(id, name, price, image) {
@@ -11,25 +19,84 @@ function addToCart(id, name, price, image) {
 }
 
 function addToCartFromItem(itemEl) {
+  let stock = Number(itemEl.dataset.stock);
+
+  if (stock <= 0) {
+    alert("This item is out of stock");
+    return;
+  }
+
   addToCart(
     itemEl.dataset.id,
     itemEl.dataset.name,
     Number(itemEl.dataset.price),
     itemEl.dataset.image
   );
+
+  // decrease stock
+  stock--;
+  itemEl.dataset.stock = stock;
+
+  // update UI
+  const stockSpan = itemEl.querySelector(".stock-text span");
+  stockSpan.textContent = stock;
+
+  // move ONLY when it just reached 0
+  if (stock === 0) {
+    alert(`${itemEl.dataset.name} is now out of stock`);
+    moveItemToEndOnce(itemEl);
+  }
+  moveItemToEnd(itemEl);
+
 }
 
 function changeQty(id, delta) {
   if (!cart[id]) return;
 
+  const itemEl = document.querySelector(
+    `[data-id="${id}"]`
+  );
+
+  let stock = Number(itemEl.dataset.stock);
   const nextQty = cart[id].qty + delta;
+
+  if (delta > 0 && stock <= 0) {
+    alert("No more stock available");
+    return;
+  }
+
   if (nextQty < 1) return;
 
   cart[id].qty = nextQty;
+
+  itemEl.dataset.stock = stock - delta;
+  const newStock = Number(itemEl.dataset.stock);
+
+  const stockSpan = itemEl.querySelector(".stock-text span");
+  stockSpan.textContent = newStock;
+
+  if (newStock === 0) {
+    alert(`${cart[id].name} is now out of stock`);
+    moveItemToEndOnce(itemEl);
+  }
+
   renderCart();
 }
 
 function removeItem(id) {
+  const item = cart[id];
+  if (!item) return;
+
+  const itemEl = document.querySelector(
+    `[data-id="${id}"]`
+  );
+
+  let stock = Number(itemEl.dataset.stock);
+  stock += item.qty;
+
+  itemEl.dataset.stock = stock;
+  itemEl.querySelector(".stock-text span").textContent = stock;
+
   delete cart[id];
   renderCart();
 }
@@ -76,7 +143,7 @@ function renderCart() {
   totalPriceEl.textContent = `NT$${total}`;
 }
 
-// ================= SEARCH =================
+//search
 const searchInput = document.getElementById("searchInput");
 
 searchInput.addEventListener("input", () => {
@@ -87,7 +154,7 @@ searchInput.addEventListener("input", () => {
   });
 });
 
-// ================= CATEGORY =================
+//category 
 function selectCategory(activeBtn) {
   document.querySelectorAll(".category-btn").forEach(btn => {
     btn.classList.remove("border-[#27DD8E]");
@@ -113,7 +180,7 @@ function selectCategory(activeBtn) {
     `/src/assets/${activeIcon}-active.svg`;
 }
 
-// ================= FETCH ITEMS =================
+// fetch item
 async function fetchItemList() {
   try {
     const res = await fetch(
@@ -121,7 +188,10 @@ async function fetchItemList() {
       { credentials: "include" }
     );
 
-    if (res.status !== 200) return;
+    if (res.status !== 200) {
+      console.error("Failed to fetch items:", res.status);
+      return;
+    }
 
     const data = await res.json();
     const grid = document.getElementById("itemGrid");
@@ -129,25 +199,39 @@ async function fetchItemList() {
 
     data.forEach(item => {
       const div = document.createElement("div");
-      div.className = "rounded-md text-center cursor-pointer";
+      div.className =
+        "bg-white rounded-xl p-3 flex flex-col items-center gap-2 cursor-pointer shadow-sm hover:shadow-md transition";
+
 
       div.dataset.id = item.id;
       div.dataset.name = item.name;
       div.dataset.price = item.price;
-      div.dataset.image = item.image;
+      div.dataset.stock = item.currentStock ?? 0;
+
+      div.dataset.image = item.image
+        ? `data:image;base64,${item.image}`
+        : "/src/assets/placeholder.jpg";
 
       div.addEventListener("click", () => addToCartFromItem(div));
+      
+      div.dataset.stock = item.currentStock ?? 0;
 
       div.innerHTML = `
-        <img src="${item.image}" class="object-cover aspect-square rounded-md" />
+        <img 
+          src="${div.dataset.image}" 
+          class="w-full h-full object-cover rounded-xl"
+        />
         <p class="font-bold mt-1">${item.name}</p>
         <p class="text-[#27ae60] font-bold">NT$${item.price}</p>
+        <p class="text-gray-600 text-sm stock-text">
+          Stock: <span>${div.dataset.stock}</span>
+        </p>
       `;
-
       grid.appendChild(div);
     });
-  } catch (err) {
-    console.error("Fetch error:", err);
+  } catch (error) {
+    console.error("Fetch error:", error);
+    alert("Cannot connect to database server.");
   }
 }
 
@@ -157,7 +241,7 @@ window.addEventListener("load", () => {
   if (allCategory) selectCategory(allCategory);
 });
 
-// ================= PAYMENT =================
+// payment
 const payButton = document.getElementById("payButton");
 
 payButton.addEventListener("click", async () => {
@@ -214,3 +298,37 @@ payButton.addEventListener("click", async () => {
     alert("Cannot connect to server. Please check if the server is running.");
   }
 });
+
+//logout
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    const confirmLogout = confirm("Are you sure you want to logout?");
+
+    if (!confirmLogout) {
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/db/login_page/log_out", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (res.status === 200) {
+        console.log("Logged out successfully");
+
+        // Clear any local data
+        items = [];
+        selectedItemIndex = null;
+
+        // Redirect to login page (cannot go back)
+        window.location.replace("../login/login.html");
+      } else {
+        alert("Logout failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Cannot connect to server.");
+    }
+  });
+}
