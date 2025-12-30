@@ -33,6 +33,157 @@ const deleteButton = document.getElementById("deleteButton");
 const grid = document.getElementById("itemGrid");
 const searchInput = document.getElementById("searchInput");
 
+const logoutBtn = document.getElementById("logoutBtn");
+
+// CHECK IF USER IS LOGGED IN
+async function checkLoginStatus() {
+  try {
+    const res = await fetch("http://localhost:3000/db/admin/WhoAmI", {
+      credentials: "include",
+    });
+
+    if (res.status !== 200) {
+      alert("You are not logged in! Redirecting to login page...");
+      window.location.href = "/views/login/login.html";
+      return false;
+    }
+
+    const companyName = await res.text();
+    console.log("Logged in as:", companyName);
+    return true;
+  } catch (error) {
+    console.error("Login check failed:", error);
+    alert(
+      "Cannot connect to server. Please make sure the server is running on port 3000."
+    );
+    return false;
+  }
+}
+
+// FETCH ITEMS FROM DATABASE
+async function fetchItemList() {
+  try {
+    const res = await fetch(
+      "http://localhost:3000/db/stock_page/fetch_item_list",
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    console.log("Fetch status:", res.status);
+
+    if (res.status === 200) {
+      const data = await res.json();
+      console.log("Fetched items from database:", data);
+
+      items = data.map((item) => ({
+        id: item.id,
+        name: item.name,
+        type: item.type,
+        price: item.price,
+        stock: item.currentStock || 0,
+        imageUrl: item.image
+          ? `data:image;base64,${item.image}`
+          : "/src/assets/placeholder.jpg",
+      }));
+
+      renderItems();
+
+      // Auto-select first item
+      if (items.length > 0) {
+        selectItem(0);
+      }
+    } else {
+      const errorText = await res.text();
+      console.error("Failed to fetch items:", errorText);
+
+      if (errorText.includes("company_id is null")) {
+        alert("Session expired! Please login again.");
+        window.location.href = "/views/login/login.html";
+      }
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+    alert("Cannot connect to database server.");
+  }
+}
+
+// ADD NEW ITEM TO DATABASE
+async function addItemToAPI(formData) {
+  try {
+    console.log("Sending item to database...");
+
+    const res = await fetch("http://localhost:3000/db/stock_page/new_item", {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    console.log("Response status:", res.status);
+
+    if (res.status === 200) {
+      const result = await res.text();
+      console.log("Item added to database successfully! Item ID:", result);
+      return true;
+    } else {
+      const errorText = await res.text();
+      console.error("Database error:", errorText);
+
+      if (
+        errorText.includes("company_id is null") ||
+        errorText === "err from sql"
+      ) {
+        alert("Session expired! Please login again.");
+        window.location.href = "/views/login/login.html";
+      } else {
+        alert("Failed to add item to database: " + errorText);
+      }
+      return false;
+    }
+  } catch (error) {
+    console.error("Network error:", error);
+    alert(
+      "Cannot connect to server. Please check if the server is running on port 3000."
+    );
+    return false;
+  }
+}
+
+// UPDATE ITEM IN DATABASE
+async function updateItemInAPI(formData) {
+  try {
+    console.log("Updating item in database...");
+
+    const res = await fetch("http://localhost:3000/db/stock_page/update_item", {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    if (res.status === 200) {
+      const result = await res.text();
+      console.log("Item updated in database successfully! Item ID:", result);
+      return true;
+    } else {
+      const errorText = await res.text();
+      console.error("Failed to update item:", errorText);
+
+      if (errorText.includes("company_id is null")) {
+        alert("Session expired! Please login again.");
+        window.location.href = "/views/login/login.html";
+      } else {
+        alert("Failed to update item: " + errorText);
+      }
+      return false;
+    }
+  } catch (error) {
+    console.error("Update error:", error);
+    alert("Cannot connect to server.");
+    return false;
+  }
+}
+
 // OPEN POPUP
 addItemBtn.addEventListener("click", () => {
   clearPopupInputs();
@@ -60,6 +211,60 @@ popupImageUpload.addEventListener("change", () => {
     `;
 
     popupFileName.textContent = file.name;
+  }
+});
+
+// ADD NEW ITEM TO DATABASE
+popupSaveBtn.addEventListener("click", async () => {
+  // Validation
+  if (!popupNameInput.value.trim()) {
+    alert("Please enter item name");
+    popupNameInput.focus();
+    return;
+  }
+
+  if (!popupPriceInput.value || popupPriceInput.value <= 0) {
+    alert("Please enter a valid price");
+    popupPriceInput.focus();
+    return;
+  }
+
+  if (!popupStockInput.value || popupStockInput.value < 0) {
+    alert("Please enter a valid stock amount");
+    popupStockInput.focus();
+    return;
+  }
+
+  if (!popupImageUpload.files[0]) {
+    alert("Please upload an image");
+    return;
+  }
+
+  // Create FormData for database
+  const formData = new FormData();
+  formData.append("name", popupNameInput.value.trim());
+  formData.append("type", "Food"); // Required by database
+  formData.append("stock", parseInt(popupStockInput.value) || 0);
+  formData.append("price", parseInt(popupPriceInput.value));
+  formData.append("icon", popupImageUpload.files[0]);
+
+  // Log what we're sending to database
+  console.log("Sending to database:");
+  console.log("  - Name:", popupNameInput.value.trim());
+  console.log("  - Type:", "Food");
+  console.log("  - Stock:", parseInt(popupStockInput.value));
+  console.log("  - Price:", parseInt(popupPriceInput.value));
+  console.log("  - Image:", popupImageUpload.files[0].name);
+
+  // Send to database via backend API
+  const success = await addItemToAPI(formData);
+
+  if (success) {
+    // Refresh from database
+    await fetchItemList();
+    alert("Item added successfully to database!");
+    clearPopupInputs();
+    closePopup();
   }
 });
 
@@ -167,8 +372,8 @@ function selectItem(index) {
   renderItems();
 }
 
-// SAVE EDITED ITEM
-saveButton.addEventListener("click", () => {
+// SAVE EDITED ITEM TO DATABASE
+saveButton.addEventListener("click", async () => {
   if (selectedItemIndex === null) {
     alert("No item selected");
     return;
@@ -179,40 +384,40 @@ saveButton.addEventListener("click", () => {
     return;
   }
 
-  items[selectedItemIndex].name = editNameInput.value;
-  items[selectedItemIndex].price = parseInt(editPriceInput.value);
-  items[selectedItemIndex].stock = parseInt(editStockInput.value) || 0;
+  const item = items[selectedItemIndex];
 
-  // Update image if new one uploaded
+  // Create FormData for database update
+  const formData = new FormData();
+  formData.append("item_id", item.id);
+
+  if (editNameInput.value !== item.name) {
+    formData.append("name", editNameInput.value);
+  }
+
+  if (item.type) {
+    formData.append("type", item.type);
+  }
+
   if (editImageUpload.files.length > 0) {
     items[selectedItemIndex].imageUrl = URL.createObjectURL(
       editImageUpload.files[0]
     );
   }
 
-  renderItems();
-  alert("Item updated successfully!");
-});
+  formData.append("stock", parseInt(editStockInput.value) || 0);
+  formData.append("price", parseInt(editPriceInput.value));
 
-// DELETE ITEM
-deleteButton.addEventListener("click", () => {
-  if (selectedItemIndex === null) {
-    alert("No item selected");
-    return;
-  }
+  console.log("Updating item in database...");
 
-  if (confirm("Are you sure you want to delete this item?")) {
-    items.splice(selectedItemIndex, 1);
+  // Send update to database via backend API
+  const success = await updateItemInAPI(formData);
 
-    if (items.length > 0) {
-      selectedItemIndex = 0;
-    } else {
-      selectedItemIndex = null;
-    }
+  if (success) {
+    // Refresh from database
+    await fetchItemList();
 
-    renderItems();
-
-    if (selectedItemIndex !== null) {
+    // Reselect the item
+    if (items.length > selectedItemIndex) {
       selectItem(selectedItemIndex);
     } else {
       // Clear edit panel
@@ -220,6 +425,8 @@ deleteButton.addEventListener("click", () => {
       editPriceInput.value = "";
       editStockInput.value = "1";
     }
+
+    alert("Item updated successfully in database!");
   }
 });
 
@@ -270,35 +477,68 @@ function selectCategory(activeBtn) {
   activeImg.src = `/src/assets/${activeIconName}-active.svg`;
 }
 
-// INITIALIZE - Start on stock category
-window.addEventListener("load", () => {
+// LOGOUT FUNCTIONALITY
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    const confirmLogout = confirm("Are you sure you want to logout?");
+
+    if (!confirmLogout) {
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/db/login_page/log_out", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (res.status === 200) {
+        console.log("Logged out successfully");
+
+        // Clear any local data
+        items = [];
+        selectedItemIndex = null;
+
+        // Redirect to login page (cannot go back)
+        window.location.replace("../login/login.html");
+      } else {
+        alert("Logout failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Cannot connect to server.");
+    }
+  });
+}
+
+// INITIALIZE - CHECK LOGIN AND LOAD DATA FROM DATABASE
+window.addEventListener("load", async () => {
+  console.log("Initializing application...");
+
+  // Check if user is logged in first
+  const isLoggedIn = await checkLoginStatus();
+
+  if (!isLoggedIn) {
+    console.log("Not logged in, stopping initialization");
+    return;
+  }
+
+  console.log("User is logged in");
+
+  // Prevent back button after logout
+  window.history.pushState(null, "", window.location.href);
+  window.onpopstate = function () {
+    window.history.pushState(null, "", window.location.href);
+  };
+
+  // Set active category
   const stockCategory = document.querySelector('[data-icon="stock"]');
   if (stockCategory) {
     selectCategory(stockCategory);
   }
 
-  // Add some sample items for testing
-  items = [
-    {
-      name: "Bertrand Onlyfans",
-      price: 1000,
-      stock: 10,
-      imageUrl:
-        "/src/assets/windows-11-stock-black-abstract-black-background-amoled-3840x2400-8971.jpg",
-    },
-    {
-      name: "Test Item",
-      price: 1500,
-      stock: 5,
-      imageUrl:
-        "/src/assets/windows-11-stock-black-abstract-black-background-amoled-3840x2400-8971.jpg",
-    },
-  ];
-
-  renderItems();
-
-  // Auto-select first item
-  if (items.length > 0) {
-    selectItem(0);
-  }
+  // Load items from database
+  console.log("Loading items from database...");
+  await fetchItemList();
+  console.log("Application ready!");
 });

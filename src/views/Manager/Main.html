@@ -25,7 +25,7 @@
         </button>
 
         <h2 class="text-2xl font-bold text-[#105E3C] mb-6">Add New Item</h2>
-        
+
         <input
           id="popupImageUpload"
           type="file"
@@ -117,7 +117,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- NAVBAR -->
     <nav
       class="flex items-center justify-between bg-[#137048] shadow-[1px_3px_20px_#181515] px-4 md:px-12 py-3"
@@ -138,31 +138,38 @@
           />
         </div>
 
-        <div data-icon="history" onclick="selectCategory(this)">
+        <a
+          href="history.html"
+          data-icon="history"
+          onclick="selectCategory(this)"
+        >
           <img
             src="/src/assets/history.svg"
             class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
-            alt=""
+            alt="History"
           />
-        </div>
+        </a>
 
-        <div data-icon="summary" onclick="selectCategory(this)">
+        <a
+          href="summary.html"
+          data-icon="summary"
+          onclick="selectCategory(this)"
+        >
           <img
             src="/src/assets/summary.svg"
             class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
-            alt=""
+            alt="Summary"
           />
-        </div>
+        </a>
       </div>
 
-      <form action="/logout" method="POST">
-        <button
-          class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
-          type="submit"
-        >
-          Logout
-        </button>
-      </form>
+      <button
+        id="logoutBtn"
+        class="bg-[#CDF7E5] text-[#1A955F] font-['inter'] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
+        type="button"
+      >
+        Logout
+      </button>
     </nav>
 
     <div
@@ -346,7 +353,7 @@
         </div>
       </div>
     </div>
-    
+
     <script src="main.js"></script>
   </body>
 </html>
