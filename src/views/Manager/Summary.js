@@ -11,7 +11,7 @@ async function fetchTransactionData() {
       "http://localhost:3000/db/summary_page/high_level",
       {
         method: "GET",
-        credentials: "include",
+        credentials: "include", 
       }
     );
 
@@ -151,36 +151,36 @@ function calculateStatistics(transactions) {
   };
 }
 
-// Calculate best selling by category
-function calculateBestSellingByCategory(transactions, itemList) {
-  const categoryMap = {};
+// Calculate best selling by item name (CHANGED FROM CATEGORY)
+function calculateBestSellingByItem(transactions, itemList) {
+  const itemMap = {};
 
-  // Create item type map
-  const itemTypes = {};
+  // Create item name map
+  const itemNames = {};
   itemList.forEach((item) => {
-    itemTypes[item.id] = item.type || "Others";
+    itemNames[item.id] = item.name || "Unknown Item";
   });
 
-  // Count sales by category
+  // Count sales by item
   transactions.forEach((transaction) => {
-    const type = itemTypes[transaction.item_id] || "Others";
+    const itemName = itemNames[transaction.item_id] || "Unknown Item";
 
-    if (!categoryMap[type]) {
-      categoryMap[type] = 0;
+    if (!itemMap[itemName]) {
+      itemMap[itemName] = 0;
     }
 
-    categoryMap[type] += transaction.count;
+    itemMap[itemName] += transaction.count;
   });
 
   // Convert to array and sort by count descending
-  const categories = Object.entries(categoryMap)
+  const items = Object.entries(itemMap)
     .map(([name, count]) => ({
       name,
       count,
     }))
     .sort((a, b) => b.count - a.count);
 
-  return categories;
+  return items;
 }
 
 // Update top statistics boxes
@@ -369,8 +369,8 @@ function createSalesChart(chartData) {
   console.log("Sales chart created successfully");
 }
 
-// Create Best Selling Food Donut Chart (by category)
-function createBestSellingChart(categoryData) {
+// Create Best Selling Food Donut Chart (by item name - CHANGED)
+function createBestSellingChart(itemData) {
   const container = document.querySelector(".lg\\:col-span-1 .h-72");
   if (!container) {
     console.error("Best selling chart container not found");
@@ -398,25 +398,33 @@ function createBestSellingChart(categoryData) {
   }
 
   // Calculate total and percentages
-  const total = categoryData.reduce((sum, item) => sum + item.count, 0);
+  const total = itemData.reduce((sum, item) => sum + item.count, 0);
 
-  const colors = {
-    Food: "#137048",
-    Beverage: "#27DD8E",
-    Snack: "#5FE3A1",
-    Snacks: "#5FE3A1",
-    Others: "#CDF7E5",
-  };
+  // Generate colors for items (expanded color palette)
+  const colorPalette = [
+    "#137048",
+    "#27DD8E",
+    "#5FE3A1",
+    "#8AEBA8",
+    "#A8F0C0",
+    "#C5F5D8",
+    "#CDF7E5",
+    "#E0FAEF",
+    "#1A955F",
+    "#22B574",
+    "#3CC48B",
+    "#4CE3A1",
+  ];
 
   bestSellingChart = new Chart(ctx, {
     type: "doughnut",
     data: {
-      labels: categoryData.map((item) => item.name),
+      labels: itemData.map((item) => item.name),
       datasets: [
         {
-          data: categoryData.map((item) => item.count),
-          backgroundColor: categoryData.map(
-            (item) => colors[item.name] || "#E0FAEF"
+          data: itemData.map((item) => item.count),
+          backgroundColor: itemData.map((item, index) => 
+            colorPalette[index % colorPalette.length]
           ),
           borderColor: "#ffffff",
           borderWidth: 3,
@@ -450,17 +458,19 @@ function createBestSellingChart(categoryData) {
     },
   });
 
-  // Create custom legend
+  // Create custom legend with scrollable container
   const legendContainer = document.createElement("div");
   legendContainer.style.display = "flex";
   legendContainer.style.flexDirection = "column";
   legendContainer.style.gap = "8px";
   legendContainer.style.paddingLeft = "0px";
   legendContainer.style.alignItems = "flex-start";
+  legendContainer.style.maxHeight = "200px";
+  legendContainer.style.overflowY = "auto";
   
-  categoryData.forEach((item) => {
+  itemData.forEach((item, index) => {
     const percentage = ((item.count / total) * 100).toFixed(0);
-    const color = colors[item.name] || "#E0FAEF";
+    const color = colorPalette[index % colorPalette.length];
     
     const legendItem = document.createElement("div");
     legendItem.style.display = "flex";
@@ -530,12 +540,13 @@ async function initializeDashboard() {
     const salesData = groupTransactionsByMonth(transactions);
     console.log("Sales data by month:", salesData);
     
-    const categoryData = calculateBestSellingByCategory(transactions, itemList);
-    console.log("Category data:", categoryData);
+    // CHANGED: Using calculateBestSellingByItem instead of calculateBestSellingByCategory
+    const itemData = calculateBestSellingByItem(transactions, itemList);
+    console.log("Item data:", itemData);
 
     // Create charts
     createSalesChart(salesData);
-    createBestSellingChart(categoryData);
+    createBestSellingChart(itemData);
 
     console.log("✅ Dashboard loaded successfully");
   } catch (error) {
@@ -586,8 +597,25 @@ function selectCategory(activeBtn) {
   }
 }
 
-// Make selectCategory available globally
+// Logout function
+async function handleLogout() {
+  try {
+    // Call logout API
+    await fetch("http://localhost:3000/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+  } finally {
+    // Always redirect to login page, even if API call fails
+    window.location.href = '../login/login.html';
+  }
+}
+
+// Make functions globally accessible
 window.selectCategory = selectCategory;
+window.handleLogout = handleLogout;
 
 // Initialize when page loads
 window.addEventListener("load", async () => {

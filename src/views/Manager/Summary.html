@@ -61,13 +61,15 @@
       </div>
 
       <form action="/logout" method="POST">
-        <button
-          class="bg-[#CDF7E5] text-[#1A955F] font-['inter'] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
-          type="submit"
-        >
-          Logout
-        </button>
-      </form>
+<!-- Replace the existing logout form with this -->
+      <button
+        onclick="handleLogout()"
+        class="bg-[#CDF7E5] text-[#1A955F] font-['inter'] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
+        type="button"
+      >
+        Logout
+      </button>   
+   </form>
     </nav>
 
     <div class="flex-1 overflow-y-auto px-6 py-6 space-y-6">
