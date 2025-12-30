@@ -77,7 +77,10 @@ async function fetchItemList() {
       const data = await res.json();
       console.log("Fetched items from database:", data);
 
-      items = data.map((item) => ({
+      // Filter out items that have an expiry date (deleted items)
+      const activeItems = data.filter(item => item.expiry === null);
+
+      items = activeItems.map((item) => ({
         id: item.id,
         name: item.name,
         type: item.type,
@@ -180,6 +183,44 @@ async function updateItemInAPI(formData) {
   } catch (error) {
     console.error("Update error:", error);
     alert("Cannot connect to server.");
+    return false;
+  }
+}
+
+// DELETE ITEM FROM DATABASE
+async function deleteItemFromAPI(itemId) {
+  try {
+    console.log('Deleting item from database...');
+    
+    // Backend expects item_id_array as JSON string: "[1,2,3]"
+    const formData = new FormData();
+    formData.append("item_id_array", JSON.stringify([itemId]));
+
+    const res = await fetch("http://localhost:3000/db/stock_page/delete_item", {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    if (res.status === 200) {
+      const result = await res.text();
+      console.log("Item deleted successfully! Rows affected:", result);
+      return true;
+    } else {
+      const errorText = await res.text();
+      console.error("Failed to delete item:", errorText);
+      
+      if (errorText.includes('company_id is null')) {
+        alert('Session expired! Please login again.');
+        window.location.replace('../login/login.html');
+      } else {
+        alert('Failed to delete item: ' + errorText);
+      }
+      return false;
+    }
+  } catch (error) {
+    console.error("Delete error:", error);
+    alert('Cannot connect to server.');
     return false;
   }
 }
@@ -427,6 +468,43 @@ saveButton.addEventListener("click", async () => {
     }
 
     alert("Item updated successfully in database!");
+  }
+});
+
+// DELETE BUTTON - DELETE SELECTED ITEM
+deleteButton.addEventListener("click", async () => {
+  if (selectedItemIndex === null) {
+    alert("No item selected");
+    return;
+  }
+
+  const item = items[selectedItemIndex];
+  
+  // Confirm deletion
+  const confirmDelete = confirm(
+    `Are you sure you want to delete "${item.name}"?\n\nThis action cannot be undone.`
+  );
+
+  if (!confirmDelete) {
+    return;
+  }
+
+  console.log("Deleting item ID:", item.id);
+
+  // Send delete request to database
+  const success = await deleteItemFromAPI(item.id);
+
+  if (success) {
+    // Refresh from database (deleted items won't appear)
+    await fetchItemList();
+
+    // Clear the edit panel
+    selectedItemIndex = null;
+    editNameInput.value = "";
+    editPriceInput.value = "";
+    editStockInput.value = "1";
+
+    alert("Item deleted successfully!");
   }
 });
 
