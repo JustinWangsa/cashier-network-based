@@ -65,47 +65,6 @@
             id="itemGrid"
             class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
           >
-            <!-- <div
-              class="rounded-md text-center"
-              data-name="Bertrand onlyfans"
-              data-price="200"
-              data-image="/src/assets/windows-11-stock-black-abstract-black-background-amoled-3840x2400-8971.jpg"
-              onclick="addToCartFromItem(this)"
-              class="rounded-md text-center"
-            >
-              <img
-                src="/src/assets/windows-11-stock-black-abstract-black-background-amoled-3840x2400-8971.jpg"
-                class="object-cover aspect-square rounded-md"
-              />
-              <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">
-                Bertrand Onlyfans
-              </p>
-              <p
-                class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base"
-              >
-                NT$1000
-              </p>
-            </div>
-            <div
-              class="rounded-md text-center"
-              data-name="seann onlyfans"
-              data-price="200"
-              data-image="/src/assets/windows-11-stock-black-abstract-black-background-amoled-3840x2400-8971.jpg"
-              onclick="addToCartFromItem(this)"
-            >
-              <img
-                src="/src/assets/windows-11-stock-black-abstract-black-background-amoled-3840x2400-8971.jpg"
-                class="object-cover aspect-square rounded-md"
-              />
-              <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">
-                seann Onlyfans
-              </p>
-              <p
-                class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base"
-              >
-                NT$1000
-              </p>
-            </div> -->
           </div>
         </div>
 
@@ -220,7 +179,9 @@
 
         <!-- PAY HERE BUTTON -->
         <div
-          class="bg-[#27DD8E] rounded-xl shadow-xl/20 flex items-center justify-center h-24 xl:h-32"
+          id="payButton"
+
+          class="bg-[#27DD8E] rounded-xl shadow-xl/20 flex items-center justify-center h-24 xl:h-32 cursor-pointer hover:bg-[#1fcf7f] active:scale-95 transition"
         >
           <h2 class="font-bold text-center text-base md:text-lg lg:text-xl">
             PAY HERE

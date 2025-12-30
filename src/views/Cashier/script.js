@@ -1,34 +1,36 @@
-//add cart function//
+// ================= CART =================
 const cart = {};
 
-function addToCart(name, price, image) {
-  if (cart[name]) {
-    cart[name].qty++;
+function addToCart(id, name, price, image) {
+  if (cart[id]) {
+    cart[id].qty++;
   } else {
-    cart[name] = { price, qty: 1, image };
+    cart[id] = { id, name, price, qty: 1, image };
   }
   renderCart();
 }
 
 function addToCartFromItem(itemEl) {
-  const name = itemEl.dataset.name;
-  const price = Number(itemEl.dataset.price);
-  const image = itemEl.dataset.image;
-
-  addToCart(name, price, image);
+  addToCart(
+    itemEl.dataset.id,
+    itemEl.dataset.name,
+    Number(itemEl.dataset.price),
+    itemEl.dataset.image
+  );
 }
 
-function changeQty(name, delta) {
-  cart[name].qty += delta;
+function changeQty(id, delta) {
+  if (!cart[id]) return;
 
-  if (cart[name].qty <= 0) {
-    delete cart[name];
-  }
+  const nextQty = cart[id].qty + delta;
+  if (nextQty < 1) return;
+
+  cart[id].qty = nextQty;
   renderCart();
 }
 
-function removeItem(name) {
-  delete cart[name];
+function removeItem(id) {
+  delete cart[id];
   renderCart();
 }
 
@@ -39,28 +41,27 @@ function renderCart() {
   cartItems.innerHTML = "";
   let total = 0;
 
-  Object.entries(cart).forEach(([name, item]) => {
+  Object.values(cart).forEach(item => {
     total += item.price * item.qty;
 
     cartItems.innerHTML += `
-      <div class="flex items-center justify-between px-4 py-3 font-bold text-[#4B4B4B] text-[4px]">
+      <div class="flex items-center justify-between px-4 py-3 font-bold text-[#4B4B4B]">
 
         <div class="flex items-center gap-3 flex-1">
           <img
             src="/src/assets/Vector.svg"
             class="w-5 h-5 cursor-pointer"
-            onclick="removeItem('${name}')"
-            title="Remove item"
+            onclick="removeItem('${item.id}')"
           />
-          <p class="text-base font-semibold">${name}</p>
+          <p class="text-base font-semibold">${item.name}</p>
         </div>
 
         <div class="flex items-center gap-3 flex-1 justify-center">
-          <button onclick="changeQty('${name}', -1)">
+          <button onclick="changeQty('${item.id}', -1)">
             <img src="/src/assets/Subtract.svg" class="w-8 h-9" />
           </button>
           <span class="text-base font-semibold">${item.qty}</span>
-          <button onclick="changeQty('${name}', 1)">
+          <button onclick="changeQty('${item.id}', 1)">
             <img src="/src/assets/Add.svg" class="w-10 h-8" />
           </button>
         </div>
@@ -75,23 +76,20 @@ function renderCart() {
   totalPriceEl.textContent = `NT$${total}`;
 }
 
-//search function//
+// ================= SEARCH =================
 const searchInput = document.getElementById("searchInput");
 
 searchInput.addEventListener("input", () => {
   const keyword = searchInput.value.toLowerCase();
-  const items = document.querySelectorAll("#itemGrid > div");
-
-  items.forEach((item) => {
+  document.querySelectorAll("#itemGrid > div").forEach(item => {
     const name = item.querySelector("p").textContent.toLowerCase();
     item.style.display = name.includes(keyword) ? "" : "none";
   });
 });
-//category selection function/
-function selectCategory(activeBtn) {
-  const buttons = document.querySelectorAll(".category-btn");
 
-  buttons.forEach((btn) => {
+// ================= CATEGORY =================
+function selectCategory(activeBtn) {
+  document.querySelectorAll(".category-btn").forEach(btn => {
     btn.classList.remove("border-[#27DD8E]");
     btn.classList.add("border-[#C0C0C0]");
 
@@ -99,8 +97,8 @@ function selectCategory(activeBtn) {
     text.classList.remove("text-[#105E3C]");
     text.classList.add("text-[#C0C0C0]");
 
-    const iconName = btn.dataset.icon;
-    btn.querySelector(".category-icon").src = `/src/assets/${iconName}.svg`;
+    const icon = btn.dataset.icon;
+    btn.querySelector(".category-icon").src = `/src/assets/${icon}.svg`;
   });
 
   activeBtn.classList.remove("border-[#C0C0C0]");
@@ -111,104 +109,108 @@ function selectCategory(activeBtn) {
   activeText.classList.add("text-[#105E3C]");
 
   const activeIcon = activeBtn.dataset.icon;
-  activeBtn.querySelector(
-    ".category-icon"
-  ).src = `/src/assets/${activeIcon}-active.svg`;
+  activeBtn.querySelector(".category-icon").src =
+    `/src/assets/${activeIcon}-active.svg`;
 }
 
-// async function fetchItemList() {
-//   await fetch("http://localhost:3000/db/stock_page/fetch_item_list")
-//     .then((res) => {
-//       if (!res.ok) throw new Error("Failed to fetch items");
-//       return res.json();
-//     })
-//     .then((items) => {
-//       const grid = document.getElementById("itemGrid");
-//       grid.innerHTML = "";
-
-//       items.forEach((item) => {
-//         const div = document.createElement("div");
-//         div.className = "rounded-md text-center cursor-pointer";
-
-//         div.dataset.name = item.name;
-//         div.dataset.price = item.price;
-//         div.dataset.image = item.image;
-
-//         div.addEventListener("click", () => addToCartFromItem(div));
-
-//         div.innerHTML = `
-//           <img src="${item.image}" class="object-cover aspect-square rounded-md" />
-//           <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">
-//             ${item.name}
-//           </p>
-//           <p class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base">
-//             NT$${item.price}
-//           </p>
-//         `;
-
-//         grid.appendChild(div);
-//       });
-//     })
-//     .catch((err) => console.error("Fetch error:", err));
-// }
-
+// ================= FETCH ITEMS =================
 async function fetchItemList() {
   try {
     const res = await fetch(
       "http://localhost:3000/db/stock_page/fetch_item_list",
-      {
-        method: "GET",
-        credentials: "include",
-      }
+      { credentials: "include" }
     );
 
-    console.log(res.status);
+    if (res.status !== 200) return;
 
-    if (res.status === 200) {
-      const data = await res.json();
-      console.log(data);
+    const data = await res.json();
+    const grid = document.getElementById("itemGrid");
+    grid.innerHTML = "";
 
-      // Get the grid container
-      const grid = document.getElementById("itemGrid");
-      grid.innerHTML = "";
+    data.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "rounded-md text-center cursor-pointer";
 
-      // Loop through each item and create elements
-      data.forEach((item) => {
-        const div = document.createElement("div");
-        div.className = "rounded-md text-center cursor-pointer";
+      div.dataset.id = item.id;
+      div.dataset.name = item.name;
+      div.dataset.price = item.price;
+      div.dataset.image = item.image;
 
-        div.dataset.name = item.name;
-        div.dataset.price = item.price;
-        div.dataset.image = item.image || "/src/assets/placeholder.jpg"; // fallback image
+      div.addEventListener("click", () => addToCartFromItem(div));
 
-        div.addEventListener("click", () => addToCartFromItem(div));
+      div.innerHTML = `
+        <img src="${item.image}" class="object-cover aspect-square rounded-md" />
+        <p class="font-bold mt-1">${item.name}</p>
+        <p class="text-[#27ae60] font-bold">NT$${item.price}</p>
+      `;
 
-        div.innerHTML = `
-          <img src="${item.image || "/src/assets/placeholder.jpg"}" 
-               class="object-cover aspect-square rounded-md" 
-               alt0"${item.name}" />
-          <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">
-            ${item.name}
-          </p>
-          <p class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base">
-            NT$${item.price}
-          </p>
-        `;
-
-        grid.appendChild(div);
-      });
-    }
-  } catch (error) {
-    console.error("Fetch error:", error);
+      grid.appendChild(div);
+    });
+  } catch (err) {
+    console.error("Fetch error:", err);
   }
 }
 
 window.addEventListener("load", () => {
   const allCategory = document.querySelector('.category-btn[data-icon="All"]');
-
   fetchItemList();
+  if (allCategory) selectCategory(allCategory);
+});
 
-  if (allCategory) {
-    selectCategory(allCategory);
+// ================= PAYMENT =================
+const payButton = document.getElementById("payButton");
+
+payButton.addEventListener("click", async () => {
+  if (Object.keys(cart).length === 0) {
+    alert("Your cart is empty!");
+    return;
+  }
+
+  // build backend payload
+  const dataObj = {};
+  Object.values(cart).forEach(item => {
+    dataObj[item.id] = String(item.qty);
+  });
+
+  const formData = new FormData();
+  formData.append("data", JSON.stringify(dataObj));
+
+  try {
+    const res = await fetch(
+      "http://localhost:3000/db/transaction_page/new_transaction",
+      {
+        method: "POST",
+        credentials: "include",
+        body: formData
+      }
+    );
+
+    const text = await res.text();
+
+    if (res.status === 200) {
+      const total = Object.values(cart).reduce(
+        (sum, item) => sum + item.price * item.qty,
+        0
+      );
+
+      alert(`Payment successful! Total: NT$${total}`);
+
+      for (let id in cart) delete cart[id];
+      renderCart();
+      fetchItemList();
+      return;
+    }
+
+    if (text.includes("company_id is null") || text === "err from sql") {
+      alert("Session expired! Please login again.");
+      window.location.href = "/views/login/login.html";
+      return;
+    }
+
+    alert("Payment failed: " + text);
+
+  } catch (err) {
+    console.error("Network error:", err);
+    alert("Cannot connect to server. Please check if the server is running.");
   }
 });
