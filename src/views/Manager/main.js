@@ -28,9 +28,12 @@ const minusStockBtn = document.getElementById("minusStock");
 const plusStockBtn = document.getElementById("plusStock");
 
 const saveButton = document.getElementById("saveButton");
+const deleteButton = document.getElementById("deleteButton");
 
 const grid = document.getElementById("itemGrid");
 const searchInput = document.getElementById("searchInput");
+
+const logoutBtn = document.getElementById("logoutBtn");
 
 // CHECK IF USER IS LOGGED IN
 async function checkLoginStatus() {
@@ -295,6 +298,34 @@ plusStockBtn.addEventListener("click", () => {
   editStockInput.value = currentValue + 1;
 });
 
+// ADD NEW ITEM
+popupSaveBtn.addEventListener("click", () => {
+  if (
+    !popupNameInput.value ||
+    !popupPriceInput.value ||
+    !popupImageUpload.files[0]
+  ) {
+    alert("Please fill all fields and upload an image");
+    return;
+  }
+
+  const newItem = {
+    name: popupNameInput.value,
+    price: parseInt(popupPriceInput.value),
+    stock: parseInt(popupStockInput.value) || 1,
+    imageUrl: URL.createObjectURL(popupImageUpload.files[0]),
+  };
+
+  items.push(newItem);
+  renderItems();
+
+  // Auto-select the newly added item
+  selectItem(items.length - 1);
+
+  clearPopupInputs();
+  closePopup();
+});
+
 // RENDER ITEMS IN GRID
 function renderItems() {
   grid.innerHTML = "";
@@ -306,15 +337,15 @@ function renderItems() {
     itemDiv.dataset.index = index;
 
     itemDiv.innerHTML = `
-      <img src="${item.imageUrl}" class="aspect-square object-cover rounded-md" alt="${item.name}" />
+      <img src="${item.imageUrl}" class="aspect-square object-cover rounded-md" />
       <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">${item.name}</p>
-      <p class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base">NT$${item.price}</p>
+      <p class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base">NT${item.price}</p>
       <p class="text-gray-600 text-xs">Stock: ${item.stock}</p>
     `;
 
     itemDiv.addEventListener("click", () => selectItem(index));
 
-    // selected = green border
+    // Highlight if selected with green border
     if (index === selectedItemIndex) {
       itemDiv.classList.add("border-4", "border-[#27DD8E]");
     }
@@ -349,7 +380,7 @@ saveButton.addEventListener("click", async () => {
   }
 
   if (!editNameInput.value || !editPriceInput.value) {
-    alert("Please fill all required fields");
+    alert("Please fill all fields");
     return;
   }
 
@@ -368,7 +399,9 @@ saveButton.addEventListener("click", async () => {
   }
 
   if (editImageUpload.files.length > 0) {
-    formData.append("icon", editImageUpload.files[0]);
+    items[selectedItemIndex].imageUrl = URL.createObjectURL(
+      editImageUpload.files[0]
+    );
   }
 
   formData.append("stock", parseInt(editStockInput.value) || 0);
@@ -383,9 +416,14 @@ saveButton.addEventListener("click", async () => {
     // Refresh from database
     await fetchItemList();
 
-    // Reselect the item  
+    // Reselect the item
     if (items.length > selectedItemIndex) {
       selectItem(selectedItemIndex);
+    } else {
+      // Clear edit panel
+      editNameInput.value = "";
+      editPriceInput.value = "";
+      editStockInput.value = "1";
     }
 
     alert("Item updated successfully in database!");
@@ -439,6 +477,40 @@ function selectCategory(activeBtn) {
   activeImg.src = `/src/assets/${activeIconName}-active.svg`;
 }
 
+// LOGOUT FUNCTIONALITY
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    const confirmLogout = confirm("Are you sure you want to logout?");
+
+    if (!confirmLogout) {
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/db/login_page/log_out", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (res.status === 200) {
+        console.log("Logged out successfully");
+
+        // Clear any local data
+        items = [];
+        selectedItemIndex = null;
+
+        // Redirect to login page (cannot go back)
+        window.location.replace("../login/login.html");
+      } else {
+        alert("Logout failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Cannot connect to server.");
+    }
+  });
+}
+
 // INITIALIZE - CHECK LOGIN AND LOAD DATA FROM DATABASE
 window.addEventListener("load", async () => {
   console.log("Initializing application...");
@@ -452,6 +524,12 @@ window.addEventListener("load", async () => {
   }
 
   console.log("User is logged in");
+
+  // Prevent back button after logout
+  window.history.pushState(null, "", window.location.href);
+  window.onpopstate = function () {
+    window.history.pushState(null, "", window.location.href);
+  };
 
   // Set active category
   const stockCategory = document.querySelector('[data-icon="stock"]');
