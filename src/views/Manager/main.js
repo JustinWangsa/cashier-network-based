@@ -80,7 +80,7 @@ async function fetchItemList() {
       console.log("Fetched items from database:", data);
 
       // Filter out items that have an expiry date (deleted items)
-      const activeItems = data.filter(item => item.expiry === null);
+      const activeItems = data.filter((item) => item.expiry === null);
 
       items = activeItems.map((item) => ({
         id: item.id,
@@ -192,8 +192,8 @@ async function updateItemInAPI(formData) {
 // DELETE ITEM FROM DATABASE
 async function deleteItemFromAPI(itemId) {
   try {
-    console.log('Deleting item from database...');
-    
+    console.log("Deleting item from database...");
+
     // Backend expects item_id_array as JSON string: "[1,2,3]"
     const formData = new FormData();
     formData.append("item_id_array", JSON.stringify([itemId]));
@@ -207,22 +207,21 @@ async function deleteItemFromAPI(itemId) {
     if (res.status === 200) {
       const result = await res.text();
       console.log("Item deleted successfully! Rows affected:", result);
-      return true;
     } else {
       const errorText = await res.text();
       console.error("Failed to delete item:", errorText);
-      
-      if (errorText.includes('company_id is null')) {
-        alert('Session expired! Please login again.');
-        window.location.replace('../login/login.html');
+
+      if (errorText.includes("company_id is null")) {
+        alert("Session expired! Please login again.");
+        window.location.replace("../login/login.html");
       } else {
-        alert('Failed to delete item: ' + errorText);
+        alert("Failed to delete item: " + errorText);
       }
-      return false;
     }
+    location.reload();
   } catch (error) {
     console.error("Delete error:", error);
-    alert('Cannot connect to server.');
+    alert("Cannot connect to server.");
     return false;
   }
 }
@@ -406,10 +405,10 @@ saveButton.addEventListener("click", async () => {
   // Create FormData for database update
   const formData = new FormData();
   formData.append("item_id", item.id);
-  
+
   // Always send the name (even if unchanged)
   formData.append("name", editNameInput.value.trim());
-  
+
   // Always send the type/category
   formData.append("type", editCategorySelect.value);
 
@@ -428,7 +427,10 @@ saveButton.addEventListener("click", async () => {
   console.log("  - Type:", editCategorySelect.value);
   console.log("  - Stock:", parseInt(editStockInput.value));
   console.log("  - Price:", parseInt(editPriceInput.value));
-  console.log("  - New image:", editImageUpload.files.length > 0 ? "Yes" : "No");
+  console.log(
+    "  - New image:",
+    editImageUpload.files.length > 0 ? "Yes" : "No"
+  );
 
   // Send update to database via backend API
   const success = await updateItemInAPI(formData);
@@ -463,7 +465,7 @@ deleteButton.addEventListener("click", async () => {
   }
 
   const item = items[selectedItemIndex];
-  
+
   // Confirm deletion
   const confirmDelete = confirm(
     `Are you sure you want to delete "${item.name}"?\n\nThis action cannot be undone.`
