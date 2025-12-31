@@ -10,25 +10,45 @@
       href="https://fonts.googleapis.com/css2?family=Aclonica&display=swap"
       rel="stylesheet"
     />
+    <style>
+      /* Custom scrollbar */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+    </style>
   </head>
 
-  <body class="bg-[#E0FAEF] m-0 p-0 overflow-hidden flex flex-col h-screen">
+  <body class="bg-[#E0FAEF] m-0 p-0 flex flex-col h-screen overflow-hidden">
     <nav
-      class="flex items-center justify-between bg-[#137048] shadow-[1px_3px_20px_#181515] px-4 md:px-12 py-3"
+      class="flex items-center justify-between bg-[#137048] shadow-[1px_3px_20px_#181515] px-4 md:px-12 py-3 flex-shrink-0"
     >
+      <!-- Logo -->
       <div
         class="flex items-center gap-4 md:gap-7 text-[22px] md:text-[30px] font-bold text-white drop-shadow-[2px_2px_8px_#181515]"
       >
-        <img src="/src/assets/Logo.svg" class="w-[35px] md:w-10" alt="" />
+        <img src="/src/assets/logo.svg" class="w-[35px] md:w-10" alt="" />
         <p class="font-['Aclonica']">ASEP'S POS</p>
       </div>
 
-      <div class="flex flex-1 justify-center gap-20">
+      <div
+        class="flex flex-1 justify-center gap-20 sm:gap-12 md:gap-16 lg:gap-20"
+      >
         <a href="main.html" data-icon="stock" onclick="selectCategory(this)">
           <img
             src="/src/assets/stock.svg"
             class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
-            alt=""
+            alt="Stock"
           />
         </a>
 
@@ -57,19 +77,23 @@
         </a>
       </div>
 
-      <form action="/logout" method="POST">
-        <button
-          onclick="handleLogout()"
-          class="bg-[#CDF7E5] text-[#1A955F] font-['inter'] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
-          type="button"
-        >
-          Logout
-        </button>
-      </form>
+      <!-- Logout Button -->
+      <button
+        onclick="handleLogout()"
+        class="bg-[#CDF7E5] text-[#1A955F] font-['inter'] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
+        type="button"
+      >
+        Logout
+      </button>
     </nav>
 
-    <div class="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+    <!-- MAIN CONTENT -->
+    <div
+      class="flex-1 overflow-y-auto overflow-x-hidden px-6 py-4 flex flex-col gap-4 custom-scrollbar"
+    >
+      <!-- STATS CARDS -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Revenue Card -->
         <div
           class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col gap-4"
         >
@@ -82,6 +106,7 @@
           </div>
         </div>
 
+        <!-- Total Orders Card -->
         <div
           class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col gap-4"
         >
@@ -94,11 +119,12 @@
           </div>
         </div>
 
+        <!-- Total Items Card -->
         <div
           class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col gap-4"
         >
           <div class="flex items-center gap-4">
-            <img src="/src/assets/Customer.svg" class="w-10 h-10 shrink-0" />
+            <img src="/src/assets/customer.svg" class="w-10 h-10 shrink-0" />
             <div>
               <p class="text-sm text-gray-500">Total Items</p>
               <p class="text-2xl font-bold" id="totalItems">0</p>
@@ -106,6 +132,7 @@
           </div>
         </div>
 
+        <!-- Total Sales Card -->
         <div
           class="bg-white rounded-2xl p-5 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col gap-4"
         >
@@ -118,7 +145,10 @@
           </div>
         </div>
       </div>
+
+      <!-- CHARTS SECTION -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Revenue Chart -->
         <div
           class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex flex-col min-h-0"
         >
@@ -132,12 +162,13 @@
           </div>
         </div>
 
+        <!-- Best Selling Chart -->
         <div
           class="lg:col-span-1 bg-white rounded-2xl p-6 shadow-[0_6px_20px_rgba(0,0,0,0.08)]"
         >
           <h2 class="font-bold text-lg mb-4">Best Selling Food</h2>
           <div class="h-72 flex items-center justify-center">
-            <canvas id="bestSellingChart" class="max-w-60 mt-48"></canvas>
+            <canvas id="bestSellingChart" class="max-w-60"></canvas>
           </div>
           <div
             id="bestSellingLegend"
@@ -146,6 +177,7 @@
         </div>
       </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="Summary.js"></script>
   </body>

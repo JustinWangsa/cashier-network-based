@@ -83,14 +83,16 @@
             </div>
 
             <div class="pr-4 pl-4">
-              <h2
+              <label
+                for="popupCategorySelect"
                 class="font-bold text-[24px] md:text-[18px] lg:text-[20px] text-[#36A273] font-['inter']"
               >
                 Category
-              </h2>
+              </label>
+
               <select
                 id="popupCategorySelect"
-                class="w-full p-3 rounded-md bg-white border border-gray-300 focus:outline-none font-['inter']"
+                class="w-full p-3 rounded-md bg-white border-0 focus:outline-none font-['inter']"
               >
                 <option value="Food">Food</option>
                 <option value="Beverage">Beverage</option>
@@ -156,18 +158,18 @@
       <div
         class="flex items-center gap-4 md:gap-7 text-[22px] md:text-[30px] font-bold text-white drop-shadow-[2px_2px_8px_#181515]"
       >
-        <img src="/src/assets/Logo.svg" class="w-[35px] md:w-10" alt="" />
+        <img src="/src/assets/logo.svg" class="w-[35px] md:w-10" alt="" />
         <p class="font-['Aclonica']">ASEP'S POS</p>
       </div>
 
-      <div class="flex flex-1 justify-center gap-20">
-        <div data-icon="stock" onclick="selectCategory(this)">
+      <div class="flex flex-1 justify-center gap-20 sm:gap-12 md:gap-16 lg:gap-20">
+        <a href="main.html" data-icon="stock" onclick="selectCategory(this)">
           <img
             src="/src/assets/stock.svg"
             class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
-            alt=""
+            alt="Stock"
           />
-        </div>
+        </a>
 
         <a
           href="history.html"
@@ -224,7 +226,7 @@
             <div class="flex flex-col sm:flex-row justify-end gap-3 ml-[100px]">
               <div class="relative w-full sm:w-48 md:w-56 lg:w-[260px]">
                 <img
-                  src="/src/assets/Searchlogo.svg"
+                  src="/src/assets/searchlogo.svg"
                   alt="Search"
                   class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-60 pointer-events-none font-['inter']"
                 />
