@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="../../output.css" rel="stylesheet" />
+    <title>Cashier Main Page</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -16,6 +17,7 @@
     class="bg-[#E0FAEF] m-0 p-0 overflow-hidden gap-6 flex flex-col h-screen"
   >
     <!-- NAVBAR -->
+    
     <nav
       class="flex items-center justify-between bg-[#137048] shadow-[1px_3px_20px_#181515] px-4 md:px-12 py-3"
     >
@@ -28,7 +30,9 @@
 
       <form action="/logout" method="POST">
         <button
+          id="logoutBtn"
           class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
+          type="button"
         >
           Logout
         </button>
@@ -63,7 +67,7 @@
 
           <div
             id="itemGrid"
-            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 shadow-2xl"
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
           ></div>
         </div>
 
@@ -188,6 +192,6 @@
       </div>
     </div>
 
-    <script src="/src/views/Cashier/script.js"></script>
+    <script src="/src/views/Cashier/cashier.js"></script>
   </body>
 </html>

@@ -1,9 +1,21 @@
+const logoutBtn = document.getElementById("logoutBtn");
+
 //move the stock if 0
 function moveItemToEndOnce(itemEl) {
   if (itemEl.dataset.moved === "true") return;
 
   itemEl.dataset.moved = "true";
   document.getElementById("itemGrid").appendChild(itemEl);
+}
+
+function hideItem(itemEl) {
+  itemEl.style.display = "none";
+  itemEl.dataset.hidden = "true";
+}
+
+function showItem(itemEl) {
+  itemEl.style.display = "";
+  itemEl.dataset.hidden = "false";
 }
 
 //cart
@@ -44,9 +56,8 @@ function addToCartFromItem(itemEl) {
   // move ONLY when it just reached 0
   if (stock === 0) {
     alert(`${itemEl.dataset.name} is now out of stock`);
-    moveItemToEndOnce(itemEl);
+    hideItem(itemEl);
   }
-  moveItemToEnd(itemEl);
 }
 
 function changeQty(id, delta) {
@@ -74,7 +85,11 @@ function changeQty(id, delta) {
 
   if (newStock === 0) {
     alert(`${cart[id].name} is now out of stock`);
-    moveItemToEndOnce(itemEl);
+    hideItem(itemEl);
+  }
+
+  if (newStock > 0 && itemEl.dataset.hidden === "true") {
+    showItem(itemEl);
   }
 
   renderCart();
@@ -91,6 +106,10 @@ function removeItem(id) {
 
   itemEl.dataset.stock = stock;
   itemEl.querySelector(".stock-text span").textContent = stock;
+
+  if (stock > 0) {
+    showItem(itemEl);
+  }
 
   delete cart[id];
   renderCart();
@@ -143,7 +162,10 @@ const searchInput = document.getElementById("searchInput");
 
 searchInput.addEventListener("input", () => {
   const keyword = searchInput.value.toLowerCase();
+
   document.querySelectorAll("#itemGrid > div").forEach((item) => {
+    if (item.dataset.hidden === "true") return;
+
     const name = item.querySelector("p").textContent.toLowerCase();
     item.style.display = name.includes(keyword) ? "" : "none";
   });
@@ -186,11 +208,14 @@ function selectCategory(activeBtn) {
 // Filter items by category
 function filterItemsByCategory(category) {
   document.querySelectorAll("#itemGrid > div").forEach((item) => {
+    if (item.dataset.hidden === "true") {
+      item.style.display = "none";
+      return;
+    }
+
     const itemCategory = item.dataset.type || "Others";
 
-    if (category === "All") {
-      item.style.display = "";
-    } else if (itemCategory === category) {
+    if (category === "All" || itemCategory === category) {
       item.style.display = "";
     } else {
       item.style.display = "none";
@@ -219,13 +244,17 @@ async function fetchItemList() {
     activeItems.forEach((item) => {
       const div = document.createElement("div");
       div.className =
-        "bg-white rounded-xl p-3 flex flex-col items-center gap-2 cursor-pointer shadow-sm hover:shadow-md transition shadow-gray-300";
+        "bg-white rounded-xl p-3 flex flex-col items-center gap-2 cursor-pointer shadow-2xl hover:shadow-md transition";
 
       div.dataset.id = item.id;
       div.dataset.name = item.name;
       div.dataset.type = item.type || "Others"; // Store category
       div.dataset.price = item.price;
       div.dataset.stock = item.currentStock ?? 0;
+
+      if (Number(div.dataset.stock) === 0) {
+        hideItem(div);
+      }
 
       div.dataset.image = item.image
         ? `data:image;base64,${item.image}`
@@ -255,9 +284,48 @@ async function fetchItemList() {
   }
 }
 
+// LOGOUT FUNCTIONALITY
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    const confirmLogout = confirm("Are you sure you want to logout?");
+
+    if (!confirmLogout) {
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/db/login_page/log_out", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (res.status === 200) {
+        console.log("Logged out successfully");
+
+        // Clear any local data
+        items = [];
+        selectedItemIndex = null;
+
+        // Redirect to login page (cannot go back)
+        window.location.replace("../login/login.html");
+      } else {
+        alert("Logout failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Cannot connect to server.");
+    }
+  });
+}
+
 window.addEventListener("load", () => {
   const allCategory = document.querySelector('.category-btn[data-icon="All"]');
   fetchItemList();
+  // Prevent back button after logout
+  window.history.pushState(null, "", window.location.href);
+  window.onpopstate = function () {
+    window.history.pushState(null, "", window.location.href);
+  };
   if (allCategory) selectCategory(allCategory);
 });
 
@@ -317,37 +385,3 @@ payButton.addEventListener("click", async () => {
     alert("Cannot connect to server. Please check if the server is running.");
   }
 });
-
-//logout
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", async () => {
-    const confirmLogout = confirm("Are you sure you want to logout?");
-
-    if (!confirmLogout) {
-      return;
-    }
-
-    try {
-      const res = await fetch("http://localhost:3000/db/login_page/log_out", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (res.status === 200) {
-        console.log("Logged out successfully");
-
-        // Clear any local data
-        items = [];
-        selectedItemIndex = null;
-
-        // Redirect to login page (cannot go back)
-        window.location.replace("../login/login.html");
-      } else {
-        alert("Logout failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("Logout error:", error);
-      alert("Cannot connect to server.");
-    }
-  });
-}
