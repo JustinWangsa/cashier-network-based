@@ -347,11 +347,17 @@ function renderItems() {
   items.forEach((item, index) => {
     const itemDiv = document.createElement("div");
     itemDiv.className =
-      "bg-white rounded-xl p-3 flex flex-col items-center gap-2 cursor-pointer shadow-sm hover:shadow-md transition";
+      "bg-white rounded-xl p-3 flex flex-col items-center gap-2 cursor-pointer shadow-2xl hover:shadow-md transition";
     itemDiv.dataset.index = index;
 
     itemDiv.innerHTML = `
-      <img src="${item.imageUrl}" class="w-full h-full object-cover rounded-xl" />
+
+      <div class="w-full max-w-[200px] aspect-square flex items-center justify-center">
+        <img
+          src="${item.imageUrl}"
+          class="w-full h-full object-contain rounded-xl"
+        />
+      </div>
       <p class="font-bold mt-1 text-xs md:text-sm lg:text-base">${item.name}</p>
       <p class="text-[#27ae60] font-bold text-xs md:text-sm lg:text-base">NT$${item.price}</p>
       <p class="text-gray-500 text-xs">${item.type}</p>

@@ -263,13 +263,15 @@ async function fetchItemList() {
       div.addEventListener("click", () => addToCartFromItem(div));
 
       div.innerHTML = `
-        <img 
-          src="${div.dataset.image}" 
-          class="w-full h-full object-cover rounded-xl"
-        />
-        <p class="font-bold mt-1">${item.name}</p>
-        <p class="text-[#27ae60] font-bold">NT$${item.price}</p>
-        <p class="text-gray-600 text-sm stock-text">
+        <div class="w-full max-w-[200px] aspect-square flex items-center justify-center">
+          <img
+            src="${div.dataset.image}"
+            class="w-full h-full object-contain rounded-xl"
+          />
+        </div>
+        <p class="font-bold mt-1 text-sm md:text-base lg:text-lg">${item.name}</p>
+        <p class="text-[#27ae60] font-bold text-sm md:text-base lg:text-lg">NT$${item.price}</p>
+        <p class="text-gray-600 text-xs md:text-sm stock-text">
           Stock: <span>${div.dataset.stock}</span>
         </p>
       `;
