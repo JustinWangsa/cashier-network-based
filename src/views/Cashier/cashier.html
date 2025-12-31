@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="../../output.css" rel="stylesheet" />
+    <title>Cashier Main Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Aclonica&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body
+    class="bg-[#E0FAEF] m-0 p-0 overflow-hidden gap-6 flex flex-col h-screen"
+  >
+    <!-- NAVBAR -->
+    
+    <nav
+      class="flex items-center justify-between bg-[#137048] shadow-[1px_3px_20px_#181515] px-4 md:px-12 py-3"
+    >
+      <div
+        class="flex items-center gap-4 md:gap-7 text-[22px] md:text-[30px] font-bold text-white drop-shadow-[2px_2px_8px_#181515]"
+      >
+        <img src="/src/assets/logo.svg" class="w-[35px] md:w-10" alt="" />
+        <p class="font-['Aclonica']">ASEP'S POS</p>
+      </div>
+
+      <form action="/logout" method="POST">
+        <button
+          id="logoutBtn"
+          class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
+          type="button"
+        >
+          Logout
+        </button>
+      </form>
+    </nav>
+
+    <div
+      class="flex flex-row gap-3 md:gap-5 px-3 md:px-6 lg:px-12 pb-3 md:pb-6 lg:pb-12 flex-1 overflow-hidden"
+    >
+      <!-- COL 1 -->
+      <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 flex-1 min-w-0">
+        <!-- ITEMS BOX -->
+        <div
+          class="w-88 sm:w-auto flex flex-col gap-4 md:gap-8 flex-5 bg-white p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6 rounded-xl shadow-xl/20 overflow-y-auto"
+        >
+          <div class="flex flex-col sm:flex-row justify-end gap-3 ml-[100px]">
+            <div class="relative w-full sm:w-48 md:w-56 lg:w-[260px]">
+              <img
+                src="/src/assets/searchlogo.svg"
+                alt="Search"
+                class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-60 pointer-events-none"
+              />
+
+              <input
+                id="searchInput"
+                type="text"
+                placeholder="Search items here"
+                class="w-full pl-9 px-3 py-2 rounded-[40px] border-1 border-[#999] text-sm md:text-base focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div
+            id="itemGrid"
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 "
+          ></div>
+        </div>
+
+        <!-- CATEGORY BUTTONS -->
+        <div
+          class="flex flex-row justify-start xl:justify-between items-stretch gap-3 sm:gap-4 md:gap-6 overflow-x-auto flex-nowrap pb-1 h-24 xl:h-32"
+        >
+          <a class="shrink-0">
+            <div
+              data-icon="All"
+              onclick="selectCategory(this)"
+              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px] w-60 cursor-pointer"
+            >
+              <img
+                src="/src/assets/all.svg"
+                class="category-icon aspect-square sm:w-6 lg:w-8 xl:min-w-15 mb-2"
+              />
+              <h2 class="category-text font-bold text-[#C0C0C0]">All</h2>
+            </div>
+          </a>
+          <a class="shrink-0">
+            <div
+              data-icon="Food"
+              onclick="selectCategory(this)"
+              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px] w-60 cursor-pointer"
+            >
+              <img
+                src="/src/assets/food.svg"
+                class="category-icon aspect-square sm:w-6 lg:w-8 xl:min-w-15 mb-2"
+              />
+              <h2 class="category-text font-bold text-[#C0C0C0]">Food</h2>
+            </div>
+          </a>
+
+          <a class="shrink-0">
+            <div
+              data-icon="Beverage"
+              onclick="selectCategory(this)"
+              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px] w-60 cursor-pointer"
+            >
+              <img
+                src="/src/assets/beverage.svg"
+                class="category-icon aspect-square sm:w-6 lg:w-8 xl:min-w-15 mb-2"
+              />
+              <h2 class="category-text font-bold text-[#C0C0C0]">Beverage</h2>
+            </div>
+          </a>
+          <a class="shrink-0">
+            <div
+              data-icon="Snacks"
+              onclick="selectCategory(this)"
+              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px] w-60 cursor-pointer"
+            >
+              <img
+                src="/src/assets/snacks.svg"
+                class="category-icon aspect-square sm:w-6 lg:w-8 xl:min-w-15 mb-2"
+              />
+              <h2 class="category-text font-bold text-[#C0C0C0]">Snacks</h2>
+            </div>
+          </a>
+          <a class="shrink-0">
+            <div
+              data-icon="Others"
+              onclick="selectCategory(this)"
+              class="category-btn bg-white p-4 shadow-xl/20 px-18 flex flex-col justify-center items-center border-[#C0C0C0] border-1 rounded-[4px] w-60 cursor-pointer"
+            >
+              <img
+                src="/src/assets/others.svg"
+                class="category-icon aspect-square sm:w-6 lg:w-8 xl:min-w-15 mb-2"
+              />
+              <h2 class="category-text font-bold text-[#C0C0C0]">Others</h2>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- COL 2 -->
+      <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 min-w-0">
+        <!-- CHECKOUT BOX -->
+        <div
+          class="w-48 sm:w-64 xl:w-lg flex flex-col flex-5 bg-white rounded-xl shadow-xl/20 overflow-y-auto border-2 border-[#d4cccc]"
+        >
+          <div
+            class="flex flex-col gap-4 p-3 md:p-4 lg:p-5 pt-3 md:pt-4 lg:pt-6"
+          >
+            <h2
+              class="font-bold text-center text-[35px] md:text-[22px] lg:text-[25px] text-[#105E3C]"
+            >
+              Checkout
+            </h2>
+          </div>
+
+          <!-- header checkout -->
+          <div
+            class="flex justify-between font-semibold py-2 text-sm font-bold text-[#717171] w-full bg-[#F1F1F1] border-t-1 border-b-1 border-[#d4cccc]"
+          >
+            <p class="flex-1 text-left px-9 font-bold text-[13px]">Name</p>
+            <p class="flex-1 text-center px-5 font-bold text-[13px]">QTY</p>
+            <p class="text-right px-8 font-bold text-[13px]">Price</p>
+          </div>
+
+          <!-- cart items -->
+          <div id="cartItems" class="flex flex-col divide-y"></div>
+
+          <div
+            class="mt-auto flex justify-between items-center px-6 py-4 font-bold text-[15px] bg-[#F1F1F1] border-t border-[#d4cccc]"
+          >
+            <p>TOTAL</p>
+            <p id="totalPrice">NT$0</p>
+          </div>
+        </div>
+
+        <!-- PAY HERE BUTTON -->
+        <div
+          id="payButton"
+          class="bg-[#27DD8E] rounded-xl shadow-xl/20 flex items-center justify-center h-24 xl:h-32 cursor-pointer hover:bg-[#1fcf7f] active:scale-95 transition"
+        >
+          <h2 class="font-bold text-center text-base md:text-lg lg:text-xl">
+            PAY HERE
+          </h2>
+        </div>
+      </div>
+    </div>
+
+    <script src="/src/views/Cashier/cashier.js"></script>
+  </body>
+</html>

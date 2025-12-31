@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="../../output.css" rel="stylesheet" />
+    <title>Manager History Page</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Aclonica&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Press+Start+2P&family=Young+Serif&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Custom scrollbar */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+    </style>
+  </head>
+
+  <body class="bg-[#E0FAEF] m-0 p-0 flex flex-col h-screen overflow-hidden">
+    <!-- NAVBAR -->
+    <nav
+      class="flex items-center justify-between bg-[#137048] shadow-[1px_3px_20px_#181515] px-4 md:px-12 py-3 flex-shrink-0"
+    >
+      <div
+        class="flex items-center gap-2 md:gap-4 lg:gap-7 text-base md:text-lg lg:text-[22px] xl:text-[30px] font-bold text-white drop-shadow-[2px_2px_8px_#181515]"
+      >
+        <img
+          src="/src/assets/logo.svg"
+          class="w-6 md:w-8 lg:w-[35px] xl:w-10"
+          alt=""
+        />
+        <p class="font-['Aclonica']">ASEP'S POS</p>
+      </div>
+
+      <div
+        class="flex flex-1 justify-center gap-20 sm:gap-12 md:gap-16 lg:gap-20"
+      >
+        <a href="Main.html" data-icon="stock" onclick="selectCategory(this)">
+          <img
+            src="/src/assets/stock.svg"
+            class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
+            alt="Stock"
+          />
+        </a>
+
+        <a
+          href="History.html"
+          data-icon="history"
+          onclick="selectCategory(this)"
+        >
+          <img
+            src="/src/assets/history.svg"
+            class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
+            alt="History"
+          />
+        </a>
+
+        <a
+          href="Summary.html"
+          data-icon="summary"
+          onclick="selectCategory(this)"
+        >
+          <img
+            src="/src/assets/summary.svg"
+            class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
+            alt="Summary"
+          />
+        </a>
+      </div>
+
+      <form action="/logout" method="POST">
+        <button
+          id="logoutBtn"
+          class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-4 md:px-6 lg:px-8 py-1.5 md:py-2 rounded-full cursor-pointer text-sm md:text-base lg:text-[16px] xl:text-[19px] font-bold w-28 md:w-36 lg:w-40 xl:w-52 hover:bg-white transition-all duration-200"
+          type="button"
+        >
+          Logout
+        </button>
+      </form>
+    </nav>
+
+    <div
+      class="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-6 lg:px-12 py-4 md:py-6 flex flex-col lg:flex-row gap-4 md:gap-6 lg:gap-8 custom-scrollbar"
+    >
+      <!-- LEFT COLUMN - Transaction History -->
+      <div class="flex flex-col gap-5 flex-1 min-w-0">
+        <div
+          class="bg-white p-4 md:p-5 rounded-xl shadow-lg flex-1 overflow-hidden flex flex-col min-h-[400px] lg:min-h-0"
+        >
+          <!-- Header with Title and Search -->
+          <div
+            class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3"
+          >
+            <h2 class="text-lg md:text-xl font-bold text-gray-800">
+              5 Most Recent Transactions
+            </h2>
+            <div
+              class="flex items-center gap-2 bg-gray-100 px-3 md:px-4 py-2 rounded-lg w-full sm:w-auto"
+            >
+              <svg
+                class="w-4 h-4 md:w-5 md:h-5 text-gray-400 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="search transactions"
+                class="bg-transparent outline-none text-sm w-full sm:w-48"
+                oninput="searchTransactions()"
+              />
+            </div>
+          </div>
+
+          <!-- Transaction List -->
+          <div class="overflow-y-auto flex-1 custom-scrollbar">
+            <div
+              class="sticky top-0 bg-white grid grid-cols-4 gap-2 md:gap-4 pb-3 border-b text-xs md:text-sm font-semibold text-gray-600 z-10"
+            >
+              <div>ID</div>
+              <div>Date</div>
+              <div>Time</div>
+              <div class="text-right">Total</div>
+            </div>
+
+            <div class="space-y-1 mt-2" id="transactionList">
+              <!-- Transaction items will be generated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN - Checkout/Return View -->
+      <div class="w-full lg:w-96 flex flex-col gap-4 md:gap-5">
+        <!-- Normal Checkout View -->
+        <div
+          id="checkoutView"
+          class="bg-white rounded-xl shadow-lg flex-1 overflow-hidden flex flex-col min-h-[400px] lg:min-h-0"
+        >
+          <div class="p-4 md:p-5 border-b border-gray-200">
+            <h2
+              class="font-bold text-center text-2xl md:text-3xl text-[#105E3C]"
+              id="checkoutTitle"
+            >
+              Content
+            </h2>
+          </div>
+
+          <!-- Header -->
+          <div
+            class="grid grid-cols-[2fr_1fr_1fr] gap-2 md:gap-4 px-4 md:px-5 py-3 bg-gray-100 border-b border-gray-200 text-xs md:text-sm font-semibold text-gray-600"
+          >
+            <div>Name</div>
+            <div class="text-center">QTY</div>
+            <div class="text-right">Price</div>
+          </div>
+
+          <!-- Items -->
+          <div
+            class="flex-1 overflow-y-auto px-4 md:px-5 custom-scrollbar"
+            id="itemsList"
+          >
+            <!-- Items will be dynamically loaded -->
+          </div>
+
+          <!-- Total at bottom -->
+          <div class="px-4 md:px-5 py-4 border-t border-gray-200">
+            <div class="flex justify-between text-lg md:text-xl font-bold">
+              <span>Total</span>
+              <span id="mainTotal">0元</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button
+          id="actionButton"
+          onclick="toggleReturnView()"
+          class="bg-[#FF4444] hover:bg-[#EE3333] text-white font-bold py-4 md:py-6 rounded-xl shadow-lg transition-all duration-200 text-base md:text-lg flex items-center justify-center gap-2"
+        >
+          <svg
+            class="w-5 h-5 md:w-6 md:h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+            />
+          </svg>
+          <span id="buttonText">Return Item</span>
+        </button>
+      </div>
+    </div>
+    <script src="History.js"></script>
+  </body>
+</html>
