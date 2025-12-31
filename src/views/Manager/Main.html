@@ -156,13 +156,19 @@
       class="flex items-center justify-between bg-[#137048] shadow-[1px_3px_20px_#181515] px-4 md:px-12 py-3"
     >
       <div
-        class="flex items-center gap-4 md:gap-7 text-[22px] md:text-[30px] font-bold text-white drop-shadow-[2px_2px_8px_#181515]"
+        class="flex items-center gap-2 md:gap-4 lg:gap-7 text-base md:text-lg lg:text-[22px] xl:text-[30px] font-bold text-white drop-shadow-[2px_2px_8px_#181515]"
       >
-        <img src="/src/assets/logo.svg" class="w-[35px] md:w-10" alt="" />
+        <img
+          src="/src/assets/logo.svg"
+          class="w-6 md:w-8 lg:w-[35px] xl:w-10"
+          alt=""
+        />
         <p class="font-['Aclonica']">ASEP'S POS</p>
       </div>
 
-      <div class="flex flex-1 justify-center gap-20 sm:gap-12 md:gap-16 lg:gap-20">
+      <div
+        class="flex flex-1 justify-center gap-20 sm:gap-12 md:gap-16 lg:gap-20"
+      >
         <a href="main.html" data-icon="stock" onclick="selectCategory(this)">
           <img
             src="/src/assets/stock.svg"
@@ -199,7 +205,7 @@
       <form action="/logout" method="POST">
         <button
           id="logoutBtn"
-          class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-8 py-2 rounded-full cursor-pointer text-[16px] md:text-[19px] font-bold w-40 md:w-52 hover:bg-white transition-all duration-200"
+          class="bg-[#CDF7E5] text-[#1A955F] border-2 border-[#27DD8E] px-4 md:px-6 lg:px-8 py-1.5 md:py-2 rounded-full cursor-pointer text-sm md:text-base lg:text-[16px] xl:text-[19px] font-bold w-28 md:w-36 lg:w-40 xl:w-52 hover:bg-white transition-all duration-200"
           type="button"
         >
           Logout
