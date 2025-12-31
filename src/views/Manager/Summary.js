@@ -17,6 +17,8 @@ const monthLabels = [
 
 const donutColors = ["#0B7A4B", "#1AC978", "#37E09B", "#8FF0BF", "#A6F5D3"];
 
+const logoutBtn = document.getElementById("logoutBtn");
+
 let revenueChart = null;
 let bestSellingChart = null;
 
@@ -281,21 +283,38 @@ function selectCategory(activeBtn) {
   }
 }
 
-async function handleLogout(event) {
-  if (event) {
-    event.preventDefault();
-  }
+// LOGOUT FUNCTIONALITY
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    const confirmLogout = confirm("Are you sure you want to logout?");
 
-  try {
-    await fetch(`${API_BASE_URL}/db/login_page/log_out`, {
-      method: "GET",
-      credentials: "include",
-    });
-  } catch (error) {
-    console.error("Logout error:", error);
-  } finally {
-    window.location.href = "../login/login.html";
-  }
+    if (!confirmLogout) {
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/db/login_page/log_out", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (res.status === 200) {
+        console.log("Logged out successfully");
+
+        // Clear any local data
+        items = [];
+        selectedItemIndex = null;
+
+        // Redirect to login page (cannot go back)
+        window.location.replace("../login/login.html");
+      } else {
+        alert("Logout failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Cannot connect to server.");
+    }
+  });
 }
 
 async function initSummary() {
@@ -303,7 +322,11 @@ async function initSummary() {
   if (summaryCategory) {
     selectCategory(summaryCategory);
   }
-
+  // Prevent back button after logout
+  window.history.pushState(null, "", window.location.href);
+  window.onpopstate = function () {
+    window.history.pushState(null, "", window.location.href);
+  };
   try {
     const records = await fetchSummaryRecords();
     const summary = buildSummary(records);
@@ -337,4 +360,3 @@ if (document.readyState === "loading") {
 }
 
 window.selectCategory = selectCategory;
-window.handleLogout = handleLogout;
