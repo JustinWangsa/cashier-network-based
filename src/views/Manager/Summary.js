@@ -18,9 +18,12 @@ const monthLabels = [
 const donutColors = ["#0B7A4B", "#1AC978", "#37E09B", "#8FF0BF", "#A6F5D3"];
 
 const logoutBtn = document.getElementById("logoutBtn");
+const exportButton = document.getElementById("exportButton");
+const exportDropdown = document.getElementById("exportDropdown");
 
 let revenueChart = null;
 let bestSellingChart = null;
+let isDropdownOpen = false;
 
 function toInt(value) {
   const parsed = Number.parseInt(value, 10);
@@ -283,6 +286,85 @@ function selectCategory(activeBtn) {
   }
 }
 
+// EXPORT DROPDOWN FUNCTIONALITY
+function toggleExportDropdown(event) {
+  event.stopPropagation();
+
+  isDropdownOpen = !isDropdownOpen;
+
+  if (exportDropdown) {
+    exportDropdown.classList.toggle("hidden", !isDropdownOpen);
+  }
+
+  // Toggle the active icon
+  const exportImg = exportButton.querySelector("img");
+  if (exportImg) {
+    if (isDropdownOpen) {
+      exportImg.src = "/src/assets/option-active.svg";
+    } else {
+      exportImg.src = "/src/assets/option.svg";
+    }
+  }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener("click", (event) => {
+  if (
+    exportButton &&
+    exportDropdown &&
+    !exportButton.contains(event.target) &&
+    !exportDropdown.contains(event.target)
+  ) {
+    if (isDropdownOpen) {
+      isDropdownOpen = false;
+      exportDropdown.classList.add("hidden");
+
+      const exportImg = exportButton.querySelector("img");
+      if (exportImg) {
+        exportImg.src = "/src/assets/option.svg";
+      }
+    }
+  }
+});
+
+// Export functions for each type
+async function exportTransaction() {
+  electronAPI.export("transaction")
+  // the type is ("transaction"|"price"|"stock"|"stockDynamic")
+  console.log("Export Transaction clicked");
+  closeExportDropdown();
+}
+
+async function exportPrice() {
+  electronAPI.export("price")
+  console.log("Export Price clicked");
+  closeExportDropdown();
+}
+
+async function exportStock() {
+  electronAPI.export("stock")
+  console.log("Export Stock clicked");
+  closeExportDropdown();
+}
+
+async function exportStockDynamic() {
+  electronAPI.export("stockDynamic")
+  console.log("Export Stock Dynamic clicked");
+  closeExportDropdown();
+}
+
+function closeExportDropdown() {
+  isDropdownOpen = false;
+  if (exportDropdown) {
+    exportDropdown.classList.add("hidden");
+  }
+
+  const exportImg = exportButton.querySelector("img");
+  if (exportImg) {
+    exportImg.src = "/src/assets/option.svg";
+  }
+}
+
 // LOGOUT FUNCTIONALITY
 if (logoutBtn) {
   logoutBtn.addEventListener("click", async () => {
@@ -317,11 +399,40 @@ if (logoutBtn) {
   });
 }
 
+// Setup export button click handler
+function setupExportButton() {
+  const exportBtn = document.getElementById("exportButton");
+  const dropdown = document.getElementById("exportDropdown");
+
+  if (exportBtn) {
+    console.log("Export button found, setting up event listener");
+    exportBtn.addEventListener("click", toggleExportDropdown);
+
+    // Check if running in Electron
+    if (typeof electronAPI !== "undefined" && electronAPI !== null) {
+      console.log("Running in Electron");
+      exportBtn.style.display = "block";
+    } else {
+      console.log(
+        "Not in Electron"
+      );
+      // Keep visible for testing, change to "none" in production
+      exportBtn.style.display = "none";
+    }
+  } else {
+    console.error("Export button not found!");
+  }
+}
+
 async function initSummary() {
   const summaryCategory = document.querySelector('[data-icon="summary"]');
   if (summaryCategory) {
     selectCategory(summaryCategory);
   }
+
+  // Setup export button
+  setupExportButton();
+
   // Prevent back button after logout
   window.history.pushState(null, "", window.location.href);
   window.onpopstate = function () {
@@ -359,4 +470,9 @@ if (document.readyState === "loading") {
   initSummary();
 }
 
+// Expose functions to window for HTML onclick handlers
 window.selectCategory = selectCategory;
+window.exportTransaction = exportTransaction;
+window.exportPrice = exportPrice;
+window.exportStock = exportStock;
+window.exportStockDynamic = exportStockDynamic;

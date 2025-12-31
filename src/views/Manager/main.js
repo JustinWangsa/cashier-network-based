@@ -90,7 +90,7 @@ async function fetchItemList() {
         stock: item.currentStock || 0,
         imageUrl: item.image
           ? `data:image;base64,${item.image}`
-          : "/src/assets/placeholder.jpg",
+          : "/src/assets/Placeholder.svg",
       }));
 
       renderItems();

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="../../output.css" rel="stylesheet" />
+    <link href="/src/output.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -78,6 +78,54 @@
             alt="Summary"
           />
         </a>
+
+        <!-- Export Button with Dropdown -->
+        <div class="relative">
+          <div
+            id="exportButton"
+            data-icon="option"
+            class="cursor-pointer"
+          >
+            <img
+              src="/src/assets/option.svg"
+              class="aspect-square w-5 sm:w-6 lg:w-8 xl:w-10 cursor-pointer"
+              alt="option"
+            />
+          </div>
+          
+          <!-- Dropdown Menu -->
+          <div
+            id="exportDropdown"
+            class="hidden absolute mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+          >
+            <div class="py-1">
+              <button
+                onclick="exportTransaction()"
+                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                Export Transaction
+              </button>
+              <button
+                onclick="exportPrice()"
+                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                Export Price
+              </button>
+              <button
+                onclick="exportStock()"
+                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                Export Stock
+              </button>
+              <button
+                onclick="exportStockDynamic()"
+                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                Export Stock Dynamic
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <form action="/logout" method="POST">
@@ -170,7 +218,7 @@
         <div
           class="lg:col-span-1 bg-white rounded-2xl p-6 shadow-[0_6px_20px_rgba(0,0,0,0.08)]"
         >
-          <h2 class="font-bold text-lg mb-4">Best Selling Food</h2>
+          <h2 class="font-bold text-lg mb-4">Best Selling Chart</h2>
           <div class="h-72 flex items-center justify-center">
             <canvas id="bestSellingChart" class="max-w-60"></canvas>
           </div>
@@ -183,6 +231,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="Summary.js"></script>
+    <script src="/src/views/Manager/Summary.js"></script>
   </body>
 </html>

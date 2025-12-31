@@ -121,7 +121,9 @@ async function fetchTransactionHistory() {
       ...new Set(allTransactions.map((tx) => new Date(tx.time).getTime())),
     ];
     uniqueTimes.sort((a, b) => b - a); // Sort descending (newest first)
-    const recentTimes = new Set(uniqueTimes.slice(0, 5));
+    // const recentTimes = new Set(uniqueTimes.slice(0, 5));
+    const recentTimes = new Set(uniqueTimes);
+    
 
     console.log(
       "5 most recent times:",

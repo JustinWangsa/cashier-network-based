@@ -45,11 +45,11 @@ form.addEventListener("submit", async function (e) {
     switch (status) {
       case "1":
         console.log("aku manager");
-        window.location.href = "../Manager/Main.html";
+        window.location.href = "/src/views/Manager/Main.html"; 
         break;
       case "0":
         console.log("aku kasir");
-        window.location.href = "../Cashier/cashier.html";
+        window.location.href = "/src/views/Cashier/cashier.html";
         break;
       default:
         alert("Login failed. Please check your ID and Password.");
