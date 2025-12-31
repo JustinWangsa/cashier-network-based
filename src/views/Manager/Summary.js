@@ -1,268 +1,163 @@
-// Summary.js - Dashboard matching Figma design
+const API_BASE_URL = "http://localhost:3000";
 
-// Global chart instances
-let salesChart = null;
+const monthLabels = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+const donutColors = ["#0B7A4B", "#1AC978", "#37E09B", "#8FF0BF", "#A6F5D3"];
+
+let revenueChart = null;
 let bestSellingChart = null;
 
-// Fetch all transaction data
-async function fetchTransactionData() {
-  try {
-    const res = await fetch(
-      "http://localhost:3000/db/summary_page/high_level",
-      {
-        method: "GET",
-        credentials: "include", 
-      }
-    );
+function toInt(value) {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
 
-    console.log("Transaction data status:", res.status);
+function formatNumber(value) {
+  return new Intl.NumberFormat("en-US").format(value);
+}
 
-    if (res.status === 200) {
-      const data = await res.json();
-      console.log("Transaction data received:", data);
-      return data;
-    } else {
-      console.error("Failed to fetch transaction data, status:", res.status);
-      const text = await res.text();
-      console.error("Response:", text);
-      return [];
-    }
-  } catch (error) {
-    console.error("Error fetching transaction data:", error);
-    return [];
+function formatCompact(value) {
+  if (value >= 1000) {
+    const text = (value / 1000).toFixed(1).replace(/\.0$/, "");
+    return `${text}k`;
+  }
+  return value.toString();
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.textContent = value;
   }
 }
 
-// Fetch item list
-async function fetchItemList() {
-  try {
-    const res = await fetch(
-      "http://localhost:3000/db/stock_page/fetch_item_list",
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
-
-    console.log("Item list status:", res.status);
-
-    if (res.status === 200) {
-      const data = await res.json();
-      console.log("Item list received:", data);
-      return data;
-    } else {
-      console.error("Failed to fetch item list, status:", res.status);
-      const text = await res.text();
-      console.error("Response:", text);
-      return [];
-    }
-  } catch (error) {
-    console.error("Error fetching item list:", error);
-    return [];
-  }
-}
-
-// Format currency
-function formatCurrency(amount) {
-  return (
-    "$" +
-    amount.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    })
-  );
-}
-
-// Format number with k/m suffix
-function formatNumberShort(num) {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + "m";
-  } else if (num >= 1000) {
-    return (num / 1000).toFixed(0) + "k";
-  }
-  return num.toString();
-}
-
-// Group transactions by month for bar chart
-function groupTransactionsByMonth(transactions) {
-  const monthData = {};
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-
-  transactions.forEach((transaction) => {
-    const date = new Date(transaction.time);
-    const monthKey = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
-    ).padStart(2, "0")}`;
-    const monthLabel = monthNames[date.getMonth()];
-
-    if (!monthData[monthKey]) {
-      monthData[monthKey] = {
-        label: monthLabel,
-        revenue: 0,
-        sales: 0,
-      };
-    }
-
-    monthData[monthKey].revenue += transaction.count * transaction.price;
-    monthData[monthKey].sales += transaction.count;
+async function fetchSummaryRecords() {
+  const response = await fetch(`${API_BASE_URL}/db/summary_page/high_level`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 
-  // Sort by date
-  const sortedMonths = Object.keys(monthData).sort();
+  const text = await response.text();
 
-  return {
-    labels: sortedMonths.map((key) => monthData[key].label),
-    revenue: sortedMonths.map((key) => monthData[key].revenue),
-    sales: sortedMonths.map((key) => monthData[key].sales),
-  };
+  if (!response.ok) {
+    throw new Error(text || `HTTP ${response.status}`);
+  }
+
+  if (text.trim() === "err from sql") {
+    throw new Error("NOT_LOGGED_IN");
+  }
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (error) {
+    throw new Error("Invalid response from server.");
+  }
+
+  return Array.isArray(data) ? data : [];
 }
 
-// Calculate statistics for top boxes
-function calculateStatistics(transactions) {
+function buildSummary(records) {
+  const revenueByMonth = Array.from({ length: 12 }, () => 0);
+  const itemTotals = new Map();
+  const transactionTimes = new Set();
+
   let totalRevenue = 0;
-  let totalItemsSold = 0;
-  const uniqueTransactions = new Set();
+  let totalSales = 0;
 
-  transactions.forEach((transaction) => {
-    const revenue = transaction.count * transaction.price;
-    totalRevenue += revenue;
-    totalItemsSold += transaction.count;
-    uniqueTransactions.add(transaction.time);
+  records.forEach((record, index) => {
+    const count = toInt(record.count);
+    const price = toInt(record.price);
+    const time = new Date(record.time);
+    const rawId = record.item_id ?? record.itemId ?? record.id;
+    const name = (record.name || "").trim();
+    const key =
+      rawId !== undefined && rawId !== null
+        ? String(rawId)
+        : name || `item-${index}`;
+    const displayName =
+      name || (rawId !== undefined ? `Item #${rawId}` : "Item");
+
+    totalRevenue += count * price;
+    totalSales += count;
+
+    if (!Number.isNaN(time.getTime())) {
+      const monthIndex = time.getMonth();
+      if (monthIndex >= 0 && monthIndex < 12) {
+        revenueByMonth[monthIndex] += count * price;
+      }
+      transactionTimes.add(time.toISOString());
+    }
+
+    const existing = itemTotals.get(key);
+    if (existing) {
+      existing.count += count;
+    } else {
+      itemTotals.set(key, { name: displayName, count });
+    }
   });
+
+  const sortedItems = Array.from(itemTotals.values()).sort(
+    (a, b) => b.count - a.count
+  );
+  const topItems = sortedItems.slice(0, 4);
 
   return {
     totalRevenue,
-    totalOrders: uniqueTransactions.size,
-    totalCustomers: uniqueTransactions.size,
-    totalItemsSold,
+    totalOrders: transactionTimes.size,
+    totalItems: itemTotals.size,
+    totalSales,
+    revenueByMonth,
+    bestSelling: topItems,
   };
 }
 
-// Calculate best selling by item name (CHANGED FROM CATEGORY)
-function calculateBestSellingByItem(transactions, itemList) {
-  const itemMap = {};
-
-  // Create item name map
-  const itemNames = {};
-  itemList.forEach((item) => {
-    itemNames[item.id] = item.name || "Unknown Item";
-  });
-
-  // Count sales by item
-  transactions.forEach((transaction) => {
-    const itemName = itemNames[transaction.item_id] || "Unknown Item";
-
-    if (!itemMap[itemName]) {
-      itemMap[itemName] = 0;
-    }
-
-    itemMap[itemName] += transaction.count;
-  });
-
-  // Convert to array and sort by count descending
-  const items = Object.entries(itemMap)
-    .map(([name, count]) => ({
-      name,
-      count,
-    }))
-    .sort((a, b) => b.count - a.count);
-
-  return items;
+function updateCards(summary) {
+  setText("totalRevenue", `$${formatNumber(summary.totalRevenue)}`);
+  setText("totalOrders", formatNumber(summary.totalOrders));
+  setText("totalItems", formatNumber(summary.totalItems));
+  setText("totalSales", formatNumber(summary.totalSales));
 }
 
-// Update top statistics boxes
-function updateStatisticsBoxes(stats) {
-  // Select only the first grid (the 4-column stat boxes)
-  const firstGrid = document.querySelector(".grid.grid-cols-1");
-  if (!firstGrid) {
-    console.error("Stats grid not found");
+function renderRevenueChart(revenueByMonth) {
+  const canvas = document.getElementById("revenueChart");
+  if (!canvas || typeof Chart === "undefined") {
     return;
   }
 
-  const boxes = firstGrid.querySelectorAll(".bg-white");
-  console.log("Found stat boxes:", boxes.length);
-
-  if (boxes[0]) {
-    boxes[0].querySelector(".text-2xl").textContent = formatCurrency(
-      stats.totalRevenue
-    );
-  }
-  if (boxes[1]) {
-    boxes[1].querySelector(".text-2xl").textContent = formatNumberShort(
-      stats.totalOrders
-    );
-  }
-  if (boxes[2]) {
-    boxes[2].querySelector(".text-2xl").textContent = formatNumberShort(
-      stats.totalCustomers
-    );
-  }
-  if (boxes[3]) {
-    boxes[3].querySelector(".text-2xl").textContent = formatNumberShort(
-      stats.totalItemsSold
-    );
-  }
-}
-
-// Create Sales & Revenue Bar Chart (matching Figma - grouped bars)
-function createSalesChart(chartData) {
-  const container = document.querySelector(".lg\\:col-span-2 .h-72");
-  if (!container) {
-    console.error("Sales chart container not found");
-    return;
+  if (revenueChart) {
+    revenueChart.destroy();
   }
 
-  // Clear any existing content
-  const parent = container.parentElement;
-  const existingSummary = parent.querySelector('.flex.justify-between.items-center');
-  if (existingSummary) {
-    existingSummary.remove();
-  }
-  container.innerHTML = "";
+  const maxValue = Math.max(1, ...revenueByMonth);
 
-  // Create canvas for chart
-  const canvas = document.createElement("canvas");
-  container.appendChild(canvas);
-
-  const ctx = canvas.getContext("2d");
-
-  if (salesChart) {
-    salesChart.destroy();
-  }
-
-  salesChart = new Chart(ctx, {
+  revenueChart = new Chart(canvas, {
     type: "bar",
     data: {
-      labels: chartData.labels,
+      labels: monthLabels,
       datasets: [
         {
           label: "Revenue",
-          data: chartData.revenue,
-          backgroundColor: "#137048",
+          data: revenueByMonth,
+          backgroundColor: "#1AC978",
           borderRadius: 4,
-          barThickness: 'flex',
-          maxBarThickness: 30,
-        },
-        {
-          label: "Sales",
-          data: chartData.sales,
-          backgroundColor: "#27DD8E",
-          borderRadius: 4,
-          barThickness: 'flex',
-          maxBarThickness: 30,
+          barThickness: 10,
         },
       ],
     },
@@ -270,164 +165,56 @@ function createSalesChart(chartData) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          display: true,
-          position: "top",
-          align: "end",
-          labels: {
-            usePointStyle: true,
-            pointStyle: "circle",
-            padding: 15,
-            font: {
-              size: 12,
-              weight: "500",
-            },
-            generateLabels: function(chart) {
-              return [
-                {
-                  text: 'Revenue',
-                  fillStyle: '#137048',
-                  hidden: false,
-                  lineWidth: 0,
-                },
-                {
-                  text: 'Sales',
-                  fillStyle: '#27DD8E',
-                  hidden: false,
-                  lineWidth: 0,
-                }
-              ];
-            }
-          },
-        },
+        legend: { display: false },
         tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: 12,
-          bodyFont: {
-            size: 13,
-          },
-          titleFont: {
-            size: 14,
-            weight: 'bold',
-          },
           callbacks: {
-            title: function (context) {
-              return context[0].label;
-            },
-            label: function (context) {
-              let label = context.dataset.label || "";
-              if (label) {
-                label += ": ";
-              }
-              if (context.datasetIndex === 0) {
-                label += formatCurrency(context.parsed.y);
-              } else {
-                label += context.parsed.y.toLocaleString() + " items";
-              }
-              return label;
-            },
+            label: (ctx) => `$${formatNumber(ctx.parsed.y)}`,
           },
         },
       },
       scales: {
         x: {
-          grid: { 
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            font: {
-              size: 11,
-            },
-            color: '#666',
-          },
+          grid: { display: false },
+          ticks: { color: "#6B7280", font: { size: 11 } },
         },
         y: {
           beginAtZero: true,
-          grid: {
-            color: "rgba(0, 0, 0, 0.06)",
-            drawBorder: false,
-          },
-          border: {
-            display: false,
-          },
+          suggestedMax: maxValue,
+          grid: { color: "#E5E7EB" },
           ticks: {
-            callback: function (value) {
-              return formatCurrency(value);
-            },
-            font: {
-              size: 11,
-            },
-            color: '#666',
-            padding: 8,
+            color: "#6B7280",
+            callback: (value) => (value === 0 ? "" : formatCompact(value)),
           },
         },
       },
     },
   });
-
-  console.log("Sales chart created successfully");
 }
 
-// Create Best Selling Food Donut Chart (by item name - CHANGED)
-function createBestSellingChart(itemData) {
-  const container = document.querySelector(".lg\\:col-span-1 .h-72");
-  if (!container) {
-    console.error("Best selling chart container not found");
+function renderBestSellingChart(items, totalSales) {
+  const canvas = document.getElementById("bestSellingChart");
+  if (!canvas || typeof Chart === "undefined") {
     return;
   }
 
-  container.innerHTML = "";
-  container.style.display = "flex";
-  container.style.flexDirection = "column";
-  
-  // Create chart canvas wrapper
-  const chartWrapper = document.createElement("div");
-  chartWrapper.style.height = "180px";
-  chartWrapper.style.marginBottom = "20px";
-  chartWrapper.style.flexShrink = "0";
-  container.appendChild(chartWrapper);
-  
-  const canvas = document.createElement("canvas");
-  chartWrapper.appendChild(canvas);
-
-  const ctx = canvas.getContext("2d");
+  const hasData = items.length > 0 && totalSales > 0;
+  const chartItems = hasData ? items : [{ name: "No data", count: 1 }];
+  const chartColors = hasData ? donutColors : ["#E0E0E0"];
 
   if (bestSellingChart) {
     bestSellingChart.destroy();
   }
 
-  // Calculate total and percentages
-  const total = itemData.reduce((sum, item) => sum + item.count, 0);
-
-  // Generate colors for items (expanded color palette)
-  const colorPalette = [
-    "#137048",
-    "#27DD8E",
-    "#5FE3A1",
-    "#8AEBA8",
-    "#A8F0C0",
-    "#C5F5D8",
-    "#CDF7E5",
-    "#E0FAEF",
-    "#1A955F",
-    "#22B574",
-    "#3CC48B",
-    "#4CE3A1",
-  ];
-
-  bestSellingChart = new Chart(ctx, {
+  bestSellingChart = new Chart(canvas, {
     type: "doughnut",
     data: {
-      labels: itemData.map((item) => item.name),
+      labels: chartItems.map((item) => item.name),
       datasets: [
         {
-          data: itemData.map((item) => item.count),
-          backgroundColor: itemData.map((item, index) => 
-            colorPalette[index % colorPalette.length]
-          ),
-          borderColor: "#ffffff",
-          borderWidth: 3,
+          data: chartItems.map((item) => item.count),
+          backgroundColor: chartColors,
+          borderColor: "#FFFFFF",
+          borderWidth: 2,
         },
       ],
     },
@@ -436,21 +223,16 @@ function createBestSellingChart(itemData) {
       maintainAspectRatio: false,
       cutout: "65%",
       plugins: {
-        legend: {
-          display: false, // Hide default legend
-        },
+        legend: { display: false },
         tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: 12,
-          bodyFont: {
-            size: 13,
-          },
           callbacks: {
-            label: function (context) {
-              const label = context.label || "";
-              const value = context.parsed;
-              const percentage = ((value / total) * 100).toFixed(1);
-              return `${label}: ${value.toLocaleString()} items (${percentage}%)`;
+            label: (ctx) => {
+              const value = ctx.parsed;
+              if (!hasData) {
+                return ctx.label;
+              }
+              const percent = Math.round((value / totalSales) * 100);
+              return `${ctx.label}: ${percent}%`;
             },
           },
         },
@@ -458,179 +240,101 @@ function createBestSellingChart(itemData) {
     },
   });
 
-  // Create custom legend with scrollable container
-  const legendContainer = document.createElement("div");
-  legendContainer.style.display = "flex";
-  legendContainer.style.flexDirection = "column";
-  legendContainer.style.gap = "8px";
-  legendContainer.style.paddingLeft = "0px";
-  legendContainer.style.alignItems = "flex-start";
-  legendContainer.style.maxHeight = "200px";
-  legendContainer.style.overflowY = "auto";
-  
-  itemData.forEach((item, index) => {
-    const percentage = ((item.count / total) * 100).toFixed(0);
-    const color = colorPalette[index % colorPalette.length];
-    
-    const legendItem = document.createElement("div");
-    legendItem.style.display = "flex";
-    legendItem.style.alignItems = "center";
-    legendItem.style.gap = "8px";
-    legendItem.style.fontSize = "13px";
-    
-    const colorBox = document.createElement("div");
-    colorBox.style.width = "12px";
-    colorBox.style.height = "12px";
-    colorBox.style.backgroundColor = color;
-    colorBox.style.borderRadius = "2px";
-    colorBox.style.flexShrink = "0";
-    
-    const text = document.createElement("span");
-    text.textContent = `${item.name}  ${percentage}%`;
-    
-    legendItem.appendChild(colorBox);
-    legendItem.appendChild(text);
-    legendContainer.appendChild(legendItem);
-  });
-  
-  container.appendChild(legendContainer);
-
-  console.log("Best selling chart created successfully");
-}
-
-// Show loading state
-function showLoading() {
-  const containers = document.querySelectorAll('.h-72');
-  containers.forEach(container => {
-    container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">Loading data...</div>';
-  });
-}
-
-// Show error state
-function showError(message) {
-  const containers = document.querySelectorAll('.h-72');
-  containers.forEach(container => {
-    container.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #f44336; text-align: center; padding: 20px;">${message}</div>`;
-  });
-}
-
-// Initialize dashboard
-async function initializeDashboard() {
-  try {
-    console.log("Loading dashboard data...");
-    showLoading();
-
-    const transactions = await fetchTransactionData();
-    const itemList = await fetchItemList();
-
-    if (transactions.length === 0) {
-      console.warn("No transaction data available");
-      showError("No transaction data available.<br>Create some transactions to see statistics.");
-      return;
-    }
-
-    console.log(`Processing ${transactions.length} transactions and ${itemList.length} items`);
-
-    // Calculate statistics
-    const stats = calculateStatistics(transactions);
-    console.log("Statistics calculated:", stats);
-    updateStatisticsBoxes(stats);
-
-    // Prepare chart data
-    const salesData = groupTransactionsByMonth(transactions);
-    console.log("Sales data by month:", salesData);
-    
-    // CHANGED: Using calculateBestSellingByItem instead of calculateBestSellingByCategory
-    const itemData = calculateBestSellingByItem(transactions, itemList);
-    console.log("Item data:", itemData);
-
-    // Create charts
-    createSalesChart(salesData);
-    createBestSellingChart(itemData);
-
-    console.log("✅ Dashboard loaded successfully");
-  } catch (error) {
-    console.error("❌ Error initializing dashboard:", error);
-    showError("Failed to load dashboard data.<br>Please check console for details.");
+  const legend = document.getElementById("bestSellingLegend");
+  if (legend) {
+    legend.innerHTML = "";
+    chartItems.forEach((item, index) => {
+      const percent = hasData
+        ? Math.round((item.count / totalSales) * 100)
+        : 100;
+      const row = document.createElement("div");
+      row.className = "flex items-center gap-3";
+      row.innerHTML = `
+        <span class="w-2.5 h-2.5 rounded-full" style="background:${chartColors[index]};"></span>
+        <span class="flex-1">${item.name}</span>
+        <span class="text-gray-500">${percent}%</span>
+      `;
+      legend.appendChild(row);
+    });
   }
 }
 
-// Load Chart.js from CDN
-function loadChartJS() {
-  return new Promise((resolve, reject) => {
-    if (typeof Chart !== "undefined") {
-      console.log("Chart.js already loaded");
-      resolve();
-      return;
-    }
-
-    console.log("Loading Chart.js from CDN...");
-    const script = document.createElement("script");
-    script.src =
-      "https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js";
-    script.onload = () => {
-      console.log("Chart.js loaded successfully");
-      resolve();
-    };
-    script.onerror = () => {
-      console.error("Failed to load Chart.js");
-      reject(new Error("Failed to load Chart.js"));
-    };
-    document.head.appendChild(script);
-  });
-}
-
-// Category selection function with navigation
 function selectCategory(activeBtn) {
-  const iconName = activeBtn.dataset.icon;
-  
-  // Define page URLs
-  const pageUrls = {
-    stock: 'main.html',
-    history: 'history.html',
-    summary: 'summary.html'
-  };
-  
-  // Navigate to the corresponding page
-  if (pageUrls[iconName]) {
-    window.location.href = pageUrls[iconName];
+  const buttons = document.querySelectorAll("[data-icon]");
+
+  buttons.forEach((btn) => {
+    const icon = btn.querySelector("img");
+    const iconName = btn.dataset.icon;
+    if (icon && iconName) {
+      icon.src = `/src/assets/${iconName}.svg`;
+    }
+  });
+
+  if (!activeBtn) {
+    return;
+  }
+
+  const activeIconName = activeBtn.dataset.icon;
+  const activeImg = activeBtn.querySelector("img");
+  if (activeImg && activeIconName) {
+    activeImg.src = `/src/assets/${activeIconName}-active.svg`;
   }
 }
 
-// Logout function
-async function handleLogout() {
+async function handleLogout(event) {
+  if (event) {
+    event.preventDefault();
+  }
+
   try {
-    // Call logout API
-    await fetch("http://localhost:3000/logout", {
-      method: "POST",
+    await fetch(`${API_BASE_URL}/db/login_page/log_out`, {
+      method: "GET",
       credentials: "include",
     });
   } catch (error) {
     console.error("Logout error:", error);
   } finally {
-    // Always redirect to login page, even if API call fails
-    window.location.href = '../login/login.html';
+    window.location.href = "../login/login.html";
   }
 }
 
-// Make functions globally accessible
-window.selectCategory = selectCategory;
-window.handleLogout = handleLogout;
-
-// Initialize when page loads
-window.addEventListener("load", async () => {
-  // Highlight the active summary icon
+async function initSummary() {
   const summaryCategory = document.querySelector('[data-icon="summary"]');
   if (summaryCategory) {
-    const activeImg = summaryCategory.querySelector("img");
-    activeImg.src = `/src/assets/summary-active.svg`;
+    selectCategory(summaryCategory);
   }
 
   try {
-    await loadChartJS();
-    await initializeDashboard();
+    const records = await fetchSummaryRecords();
+    const summary = buildSummary(records);
+
+    updateCards(summary);
+    renderRevenueChart(summary.revenueByMonth);
+    renderBestSellingChart(summary.bestSelling, summary.totalSales);
   } catch (error) {
-    console.error("Failed to initialize dashboard:", error);
-    showError("Failed to initialize dashboard.<br>Please refresh the page.");
+    console.error("Summary error:", error);
+
+    if (error.message === "NOT_LOGGED_IN") {
+      window.location.href = "../login/login.html";
+      return;
+    }
+
+    updateCards({
+      totalRevenue: 0,
+      totalOrders: 0,
+      totalItems: 0,
+      totalSales: 0,
+    });
+    renderRevenueChart(Array.from({ length: 12 }, () => 0));
+    renderBestSellingChart([], 0);
   }
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initSummary);
+} else {
+  initSummary();
+}
+
+window.selectCategory = selectCategory;
+window.handleLogout = handleLogout;
