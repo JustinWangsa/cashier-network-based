@@ -219,7 +219,7 @@ async function fetchItemList() {
     activeItems.forEach((item) => {
       const div = document.createElement("div");
       div.className =
-        "bg-white rounded-xl p-3 flex flex-col items-center gap-2 cursor-pointer shadow-sm hover:shadow-md transition";
+        "bg-white rounded-xl p-3 flex flex-col items-center gap-2 cursor-pointer shadow-sm hover:shadow-md transition shadow-gray-300";
 
       div.dataset.id = item.id;
       div.dataset.name = item.name;
